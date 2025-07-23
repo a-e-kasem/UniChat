@@ -1,29 +1,60 @@
-# UniChat 📱💬
+<h1 align="center">📱 UniChat</h1>
+<p align="center">
+  A modern and anonymous group chat app tailored for university students.
+</p>
 
-**UniChat** is a modern Flutter mobile app designed to simplify and enhance university team communication.  
-Built with a focus on anonymity, privacy, and organized collaboration, it helps students and professors connect, discuss, and manage academic content with ease.
+<p align="center">
+  <img src="assets/images/white.png" width="400"/>
+```
+  <img src="assets/images/black.png" width="400"/>
+</p>
 
 ---
 
 ## 🚀 Features
 
-- 🔐 **Authentication** (Login / Register)
-- 🌗 **Light / Dark Mode Switching**
-- 🧑‍🏫 **Role-based Access** (Student, Admin, Professor)
-- 📩 **Anonymous Group Messaging**
-- 📎 **Attachments Library** for each subject
-- 🗳️ **Group Voting System**
-- 👥 **Group Join & Management**
-- 🎨 Clean UI with theme customization
-- 📤 **Image Upload** with Cloudinary API
-- 🔄 Real-time Chat with Reply feature
+- 🔐 Secure login & register system (light/dark mode)
+- 💬 Real-time group messaging
+- 🕵️ Anonymous messages (only visible to admin/doctor)
+- 👨‍🏫 Group with roles: Doctor, Admins, Members
+- 📁 Attachments per subject (added by doctor)
+- 📊 Poll system inside the group
+- 🌙 Light & Dark theme support
+- 📱 Responsive and modern UI
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Description |
+|------------|-------------|
+| Flutter | UI Development |
+| Firebase Auth | User Authentication |
+| Cloud Firestore | Real-time Database |
+| Firebase Storage | File Attachments |
+| Provider | State Management |
+| Cloudinary | Image Uploading |
+
+---
+
+## 📸 Screenshots
+
+| Splash | Register | Login (Light) | Login (Dark) |
+|:--:|:--:|:--:|:--:|
+| ![](assets/screens/splash.png) | ![](assets/screens/register.png) | ![](assets/screens/loginLight.png) | ![](assets/screens/loginNight.png) |
+
+| Message Select (Light) | Message Select (Dark) | Chat (Light) | Chat (Dark) | Admin Panel |
+|:--:|:--:|:--:|:--:|:--:|
+| ![](assets/screens/selecteLight.png) | ![](assets/screens/selecteNight.png) | ![](assets/screens/chatScreenLight.png) | ![](assets/screens/chatScreenNight.png) | ![](assets/screens/admin.png) |
+
+
+
+
 
 ---
 
 ## 🧠 Project Structure
-
-> The full folder structure for the `lib/` directory can be found [here](./lib_folder_tree.md)
-
+> The full folder structure for the `lib/` directory can be found [here](./lib_tree.txt)
 ```bash
 lib/
 ├── app/                  # App starter and widget wrapper
@@ -58,36 +89,16 @@ lib/
 │   └── reply_provider.dart
 └── main.dart
 
-### Splash Screen  
-![Admin](assets/screens/splash.png)
 
-### Login Screen  
-![Login](assets/screens/loginLight.png)
-![Login](assets/screens/loginNight.png)
+## ▶️ Getting Started
 
-### Register Screen  
-![Admin](assets/screens/register.png)
+1. Clone the repo
+```bash
+git clone https://github.com/username/uni_chat.git
+cd uni_chat
 
-### Admin Screen  
-![Admin](assets/screens/admin.png)
-
-### Chat Interface  
-![Chat](assets/screens/chatScreenLight.png)
-![Chat](assets/screens/chatScreenNight.png)
-![Chat](assets/screens/selecteLight.png)
-![Chat](assets/screens/selecteNight.png)
-
-# 1. Clone the repo
-git clone https://github.com/a-e-kasem/UniChat.git
-
-# 2. Navigate to the project directory
-cd UniChat
-
-# 3. Install dependencies
 flutter pub get
 
-# 4. Run the app
 flutter run
 
 
----
