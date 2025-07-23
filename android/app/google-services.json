@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "807547736259",
+    "project_id": "uni-chat-69d59",
+    "storage_bucket": "uni-chat-69d59.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807547736259:android:772a825a598066e5bdd276",
+        "android_client_info": {
+          "package_name": "com.example.uni_chat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAf_LdCcJVgeca4Ybw3LV6JMR1z_kWGaEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
