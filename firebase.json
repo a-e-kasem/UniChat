@@ -1,0 +1,39 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "uni-chat-69d59",
+          "appId": "1:807547736259:android:772a825a598066e5bdd276",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "uni-chat-69d59",
+          "configurations": {
+            "android": "1:807547736259:android:772a825a598066e5bdd276",
+            "ios": "1:807547736259:ios:700ca06a72e70cebbdd276",
+            "macos": "1:807547736259:ios:700ca06a72e70cebbdd276",
+            "web": "1:807547736259:web:271359f798f79d6cbdd276",
+            "windows": "1:807547736259:web:5eef8ff9375db5c5bdd276"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
