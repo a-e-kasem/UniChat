@@ -4,12 +4,12 @@ import 'package:context_menu_android/features/context_menu/data/models/context_m
 import 'package:context_menu_android/features/context_menu/presentation/widget/ios_style_context_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+import 'package:uni_chat/business_logic/replay_cubit/replay_message_cubit.dart';
 import 'package:uni_chat/widgets/chat/message_bubble.dart';
 import 'package:uni_chat/widgets/chat/reply_message.dart';
-import 'package:uni_chat/providers/chat_provider.dart';
 
 class GetMessages extends StatelessWidget {
   final String chatId;
@@ -80,9 +80,8 @@ class GetMessages extends StatelessWidget {
                                 label: 'Reply',
                                 onTap: () {
                                   log('Reply pressed');
-                                  Provider.of<ReplyProvider>(
+                                  BlocProvider.of<ReplayMessageCubit>(
                                     context,
-                                    listen: false,
                                   ).setReply(messages[index].id);
                                 },
                               ),
@@ -92,7 +91,7 @@ class GetMessages extends StatelessWidget {
                                 onTap: () {
                                   log('Copy pressed');
                                   Clipboard.setData(
-                                    new ClipboardData(text: message),
+                                    ClipboardData(text: message),
                                   );
                                 },
                               ),
@@ -129,9 +128,8 @@ class GetMessages extends StatelessWidget {
                                     GestureDetector(
                                       onTap: () {
                                         log('Reply tapped');
-                                        Provider.of<ReplyProvider>(
+                                        BlocProvider.of<ReplayMessageCubit>(
                                           context,
-                                          listen: false,
                                         ).setReply(messages[index].id);
                                       },
                                       child: Container(
@@ -213,9 +211,8 @@ class GetMessages extends StatelessWidget {
                             GestureDetector(
                               onTap: () {
                                 log('Reply tapped');
-                                Provider.of<ReplyProvider>(
+                                BlocProvider.of<ReplayMessageCubit>(
                                   context,
-                                  listen: false,
                                 ).setReply(messages[index].id);
                               },
                               child: Container(

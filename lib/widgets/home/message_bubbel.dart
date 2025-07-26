@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MessageBubbel extends StatelessWidget {
-  MessageBubbel({super.key, required this.isDark, required this.message});
+  const MessageBubbel({super.key, required this.isDark, required this.message});
 
   final Map<String, String> message;
   final bool isDark;

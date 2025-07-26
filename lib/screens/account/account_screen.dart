@@ -2,16 +2,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:uni_chat/business_logic/user_cubit/user_cubit.dart';
 import 'package:uni_chat/core/consts/consts.dart';
-import 'package:uni_chat/models/user_model.dart';
 import 'package:uni_chat/widgets/account/change_image_button.dart';
 import '../../widgets/account/avatar_widget.dart';
 import '../../widgets/account/editable_name_widget.dart';
 import '../../widgets/account/email_display.dart';
 
 class AccountScreen extends StatefulWidget {
-  const AccountScreen({Key? key});
+  const AccountScreen({super.key});
   static const String id = 'AccountScreen';
 
   @override
@@ -54,7 +55,8 @@ class _AccountScreenState extends State<AccountScreen> {
     FocusScope.of(context).unfocus();
     setState(() => isEdit = false);
 
-    Provider.of<UserModel>(context, listen: false).setUserName(newName);
+    final userCubit = BlocProvider.of<UserCubit>(context);
+    userCubit.setUserName(newName);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

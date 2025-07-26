@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_chat/app/app_widget.dart';
-import 'package:uni_chat/models/messageRegister.dart';
+import 'package:uni_chat/business_logic/register_cubit/register_cubit.dart';
+import 'package:uni_chat/business_logic/replay_cubit/replay_message_cubit.dart';
+import 'package:uni_chat/business_logic/user_cubit/user_cubit.dart';
 import 'package:uni_chat/models/mode_model.dart';
 import 'package:uni_chat/models/selected_Index.dart';
-import 'package:uni_chat/models/user_model.dart';
-import 'package:uni_chat/providers/chat_provider.dart';
 import 'config/firebase_options.dart';
 
 void main() async {
@@ -14,17 +15,19 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(
-    MultiProvider(
+    MultiBlocProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => UserModel()),
-        ChangeNotifierProvider(create: (context) => Messageregister()),
-        ChangeNotifierProvider(create: (context) => ModeModel()),
-        ChangeNotifierProvider(create: (context) => SelectedIndex()),
-        ChangeNotifierProvider<ReplyProvider>(
-          create: (context) => ReplyProvider(),
-        ),
+        BlocProvider(create: (_) => ReplayMessageCubit()),
+        BlocProvider(create: (_) => RegisterCubit()),
+        BlocProvider(create: (_) => UserCubit()),
       ],
-      child: UniChat(),
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ModeModel()),
+          ChangeNotifierProvider(create: (_) => SelectedIndex()),
+        ],
+        child: UniChat(),
+      ),
     ),
   );
 }
