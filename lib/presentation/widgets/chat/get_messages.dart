@@ -7,9 +7,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:uni_chat/logic/replay_cubit/replay_message_cubit.dart';
-import 'package:uni_chat/presentation/widgets/chat/message_bubble.dart';
-import 'package:uni_chat/presentation/widgets/chat/reply_message.dart';
+import 'package:UniChat/logic/replay_cubit/replay_message_cubit.dart';
+import 'package:UniChat/presentation/widgets/chat/message_bubble.dart';
+import 'package:UniChat/presentation/widgets/chat/reply_message.dart';
 
 class GetMessages extends StatelessWidget {
   final String chatId;
@@ -41,6 +41,9 @@ class GetMessages extends StatelessWidget {
 
         return ListView.builder(
           reverse: true,
+          controller: BlocProvider.of<ReplayMessageCubit>(
+            context,
+          ).scrollController,
           itemCount: messages.length,
           itemBuilder: (context, index) {
             final data = messages[index].data() as Map<String, dynamic>;
@@ -112,7 +115,6 @@ class GetMessages extends StatelessWidget {
                             child: Container(
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               margin: const EdgeInsets.symmetric(
@@ -295,3 +297,4 @@ class GetMessages extends StatelessWidget {
     );
   }
 }
+

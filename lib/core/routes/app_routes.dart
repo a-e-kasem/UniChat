@@ -1,13 +1,13 @@
 // app/routes/app_routes.dart
 import 'package:flutter/material.dart';
-import 'package:uni_chat/presentation/screens/admins/admin_screen.dart';
-import 'package:uni_chat/presentation/screens/auth/login_screen.dart';
-import 'package:uni_chat/presentation/screens/auth/register_screen.dart';
-import 'package:uni_chat/presentation/screens/chat/chat_screen.dart';
-import 'package:uni_chat/presentation/screens/home/home_screen.dart';
-import 'package:uni_chat/presentation/screens/splash/splash_screen.dart';
-import 'package:uni_chat/presentation/widgets/admin/screens/users_admin_controle_screen.dart';
-import 'package:uni_chat/presentation/widgets/navigation/build_pages.dart';
+import 'package:UniChat/presentation/screens/admins/admin_screen.dart';
+import 'package:UniChat/presentation/screens/auth/login_screen.dart';
+import 'package:UniChat/presentation/screens/auth/register_screen.dart';
+import 'package:UniChat/presentation/screens/chat/chat_screen.dart';
+import 'package:UniChat/presentation/screens/home/home_screen.dart';
+import 'package:UniChat/presentation/screens/splash/splash_screen.dart';
+import 'package:UniChat/presentation/widgets/admin/screens/users_admin_controle_screen.dart';
+import 'package:UniChat/presentation/widgets/navigation/build_pages.dart';
 
 class AppRoutes {
   static const String splash = SplashScreen.id;

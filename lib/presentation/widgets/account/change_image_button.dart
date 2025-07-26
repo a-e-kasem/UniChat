@@ -5,8 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:uni_chat/core/consts/consts.dart';
-import 'package:uni_chat/data/services/api/cloudinary_service.dart';
+import 'package:UniChat/core/consts/consts.dart';
+import 'package:UniChat/data/services/api/cloudinary_service.dart';
 
 class ChangeImageButton extends StatelessWidget {
   final ValueNotifier<String?> notifier;

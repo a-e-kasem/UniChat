@@ -1,10 +1,10 @@
 import 'dart:developer';
-import 'package:uni_chat/core/consts/consts.dart';
+import 'package:UniChat/core/consts/consts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uni_chat/presentation/screens/admins/admin_screen.dart';
-import 'package:uni_chat/presentation/widgets/navigation/build_pages.dart';
+import 'package:UniChat/presentation/screens/admins/admin_screen.dart';
+import 'package:UniChat/presentation/widgets/navigation/build_pages.dart';
 
 class LoginButtonBox extends StatelessWidget {
   const LoginButtonBox({

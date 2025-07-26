@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:uni_chat/presentation/widgets/admin/components/add_to_group_admin_button.dart';
-import 'package:uni_chat/presentation/widgets/admin/components/delete_user_button.dart';
+import 'package:UniChat/presentation/widgets/admin/components/add_to_group_admin_button.dart';
+import 'package:UniChat/presentation/widgets/admin/components/delete_user_button.dart';
 
 class UsersAdminControlScreen extends StatefulWidget {
   const UsersAdminControlScreen({super.key});

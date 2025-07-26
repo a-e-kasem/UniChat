@@ -5,9 +5,10 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>
 
     <application
-        android:label="uni_chat"
+        android:label="UniChat"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
 
         <provider
             android:name="androidx.core.content.FileProvider"

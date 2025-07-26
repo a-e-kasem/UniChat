@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:uni_chat/presentation/screens/auth/register_screen.dart';
+import 'package:UniChat/presentation/screens/auth/register_screen.dart';
 
 class UserHaveAccountOrNot extends StatelessWidget {
   const UserHaveAccountOrNot({super.key, required this.nextPage});

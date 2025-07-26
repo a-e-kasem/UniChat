@@ -1,63 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:uni_chat/data/models/selected_Index.dart';
-import 'package:uni_chat/presentation/screens/account/account_screen.dart';
-import 'package:uni_chat/presentation/screens/home/home_screen.dart';
-import 'package:uni_chat/presentation/screens/settings/settings_screen.dart';
-import 'package:uni_chat/presentation/widgets/navigation/nav_bar_circle.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:UniChat/logic/swich_pages_cubit/swich_pages_cubit.dart';
+import 'package:UniChat/presentation/screens/account/account_screen.dart';
+import 'package:UniChat/presentation/screens/home/home_screen.dart';
+import 'package:UniChat/presentation/screens/settings/settings_screen.dart';
+import 'package:UniChat/presentation/widgets/navigation/nav_bar_circle.dart';
 
-class BuildPages extends StatefulWidget {
-  const BuildPages({super.key});
+// ignore: must_be_immutable
+class BuildPages extends StatelessWidget {
+  BuildPages({super.key});
+
   static const String id = 'BuildPages';
 
-  @override
-  State<BuildPages> createState() => _BuildPagesState();
-}
-
-class _BuildPagesState extends State<BuildPages> {
-  late PageController _pageController;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final selectedIndex = Provider.of<SelectedIndex>(
-      context,
-      listen: false,
-    ).selectedIndex;
-    _pageController = PageController(initialPage: selectedIndex);
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  final List<Widget> pages = [
-    AccountScreen(),
-    HomeScreen(),
-    SettingsScreen(),
-  ];
+  final PageController _pageController = PageController();
+  final List<Widget> pages = [AccountScreen(), HomeScreen(), SettingsScreen()];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Selector<SelectedIndex, int>(
-        selector: (_, provider) => provider.selectedIndex,
-        builder: (context, selectedIndex, child) {
+      body: BlocConsumer<SwichPagesCubit, SwichPagesState>(
+        listener: (context, state) {
+          if (state is SwichPagesHome) {
+            // Lab Lab laaa
+          } else if (state is SwichPagesProfile) {
+            // Lab Lab laaa
+          } else if (state is SwichPagesSetting) {
+            // Lab Lab laaa
+          }
+        },
+        builder: (context, state) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (_pageController.hasClients) {
-              _pageController.jumpToPage(selectedIndex);
+              _pageController.jumpToPage(
+                BlocProvider.of<SwichPagesCubit>(context).selectedIndex,
+              );
             }
           });
 
           return PageView(
             controller: _pageController,
             onPageChanged: (index) {
-              Provider.of<SelectedIndex>(
-                context,
-                listen: false,
-              ).setSelectedIndex(index);
+              BlocProvider.of<SwichPagesCubit>(context).selected(index);
             },
             children: pages,
           );
@@ -65,10 +48,7 @@ class _BuildPagesState extends State<BuildPages> {
       ),
       bottomNavigationBar: NavBarCircle(
         onTap: (index) {
-          Provider.of<SelectedIndex>(
-            context,
-            listen: false,
-          ).setSelectedIndex(index);
+          BlocProvider.of<SwichPagesCubit>(context).selected(index);
         },
       ),
     );
