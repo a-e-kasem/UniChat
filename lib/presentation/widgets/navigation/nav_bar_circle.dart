@@ -1,7 +1,7 @@
 import 'package:circle_nav_bar/circle_nav_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:uni_chat/data/models/selected_Index.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:UniChat/logic/swich_pages_cubit/swich_pages_cubit.dart';
 
 class NavBarCircle extends StatelessWidget {
   final void Function(int)? onTap;
@@ -14,11 +14,20 @@ class NavBarCircle extends StatelessWidget {
         Theme.of(context).bottomNavigationBarTheme.selectedItemColor ??
         (isDark ? Colors.grey.shade300 : Colors.grey.shade700);
 
-    return Consumer<SelectedIndex>(
-      builder: (context, selectedIndex, child) => CircleNavBar(
-        activeIndex: selectedIndex.selectedIndex,
+    return BlocConsumer<SwichPagesCubit, SwichPagesState>(
+      listener: (context, state) {
+        if (state is SwichPagesHome) {
+          // Lab Lab laaa
+        } else if (state is SwichPagesProfile) {
+          // Lab Lab laaa
+        } else if (state is SwichPagesSetting) {
+          // Lab Lab laaa
+        }
+      },
+      builder: (context, state) => CircleNavBar(
+        activeIndex: BlocProvider.of<SwichPagesCubit>(context).selectedIndex,
         onTap: (index) {
-          selectedIndex.setSelectedIndex(index);
+          BlocProvider.of<SwichPagesCubit>(context).selected(index);
           if (onTap != null) {
             onTap!(index);
           }

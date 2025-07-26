@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:uni_chat/core/routes/app_routes.dart';
-import 'package:uni_chat/core/themes/app_theme.dart';
-import 'package:uni_chat/data/models/mode_model.dart';
-import 'package:uni_chat/presentation/screens/splash/splash_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:UniChat/core/routes/app_routes.dart';
+import 'package:UniChat/core/themes/app_theme.dart';
+import 'package:UniChat/logic/mode_cubit/mode_cubit.dart';
+import 'package:UniChat/presentation/screens/splash/splash_screen.dart';
 
 class UniChat extends StatelessWidget {
   const UniChat({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ModeModel>(
-      builder: (context, modeModel, child) {
+    return BlocConsumer<ModeCubit, ModeState>(
+      listener: (context, state) {
+        if (state is ModeDark) {
+          // =======
+        } else {
+          // =======
+        }
+      },
+      builder: (context, state) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'UniChat',
@@ -19,7 +26,7 @@ class UniChat extends StatelessWidget {
 
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
-          themeMode: modeModel.mode == Brightness.dark
+          themeMode: BlocProvider.of<ModeCubit>(context).isDark
               ? ThemeMode.dark
               : ThemeMode.light,
           initialRoute: SplashScreen.id,

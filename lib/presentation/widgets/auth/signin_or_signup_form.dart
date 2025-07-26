@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:uni_chat/presentation/widgets/auth/register/components/selecter_role.dart';
-import 'package:uni_chat/presentation/widgets/auth/text_field_in_form.dart';
-import 'package:uni_chat/presentation/widgets/auth/login/components/login_buttom_box.dart';
-import 'package:uni_chat/presentation/widgets/auth/register/components/register_buttom_box.dart';
-import 'package:uni_chat/presentation/widgets/auth/user_have_account_or_not.dart';
+import 'package:UniChat/presentation/widgets/auth/register/components/selecter_role.dart';
+import 'package:UniChat/presentation/widgets/auth/text_field_in_form.dart';
+import 'package:UniChat/presentation/widgets/auth/login/components/login_buttom_box.dart';
+import 'package:UniChat/presentation/widgets/auth/register/components/register_buttom_box.dart';
+import 'package:UniChat/presentation/widgets/auth/user_have_account_or_not.dart';
 
 // ignore: must_be_immutable
 class LogInForm extends StatefulWidget {

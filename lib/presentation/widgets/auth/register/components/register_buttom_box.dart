@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uni_chat/core/consts/consts.dart';
+import 'package:UniChat/core/consts/consts.dart';
 
 class RegisterButtonBox extends StatelessWidget {
   const RegisterButtonBox({

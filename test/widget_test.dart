@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:uni_chat/presentation/app/app_widget.dart';
+import 'package:UniChat/presentation/app/app_widget.dart';
 
 
 void main() {

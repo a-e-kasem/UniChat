@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:uni_chat/presentation/widgets/home/provider_state.dart';
-import 'package:uni_chat/presentation/screens/chat/chat_screen.dart';
+import 'package:UniChat/presentation/widgets/home/provider_state.dart';
+import 'package:UniChat/presentation/screens/chat/chat_screen.dart';
 
 class BodyInfo extends StatefulWidget {
   const BodyInfo({super.key});

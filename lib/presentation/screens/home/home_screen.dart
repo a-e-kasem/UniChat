@@ -1,12 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:uni_chat/presentation/widgets/home/join_to_group_button.dart';
-import 'package:uni_chat/presentation/widgets/home/provider_state.dart';
-import 'package:uni_chat/data/models/mode_model.dart';
-import 'package:uni_chat/presentation/screens/auth/login_screen.dart';
-import 'package:uni_chat/presentation/widgets/home/body_info.dart';
-import 'package:uni_chat/presentation/widgets/home/image_bar.dart';
+import 'package:UniChat/logic/mode_cubit/mode_cubit.dart';
+import 'package:UniChat/presentation/widgets/home/join_to_group_button.dart';
+import 'package:UniChat/presentation/widgets/home/provider_state.dart';
+import 'package:UniChat/presentation/screens/auth/login_screen.dart';
+import 'package:UniChat/presentation/widgets/home/body_info.dart';
+import 'package:UniChat/presentation/widgets/home/image_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -47,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(width: 5),
             GestureDetector(
               onTap: () {
-                Provider.of<ModeModel>(context, listen: false).toggleMode();
+                BlocProvider.of<ModeCubit>(context).toggleMode();
               },
               child: Icon(
                 isDark ? Icons.light_mode : Icons.dark_mode,

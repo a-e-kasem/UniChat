@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:uni_chat/logic/replay_cubit/replay_message_cubit.dart';
-import 'package:uni_chat/presentation/widgets/chat/get_messages.dart';
-import 'package:uni_chat/data/services/api/cloudinary_service.dart';
+import 'package:UniChat/logic/replay_cubit/replay_message_cubit.dart';
+import 'package:UniChat/presentation/widgets/chat/get_messages.dart';
+import 'package:UniChat/data/services/api/cloudinary_service.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key, required this.group});
@@ -55,6 +55,8 @@ class _ChatScreenState extends State<ChatScreen> {
       'time': FieldValue.serverTimestamp(),
     });
 
+    
+    
     replyProvider.clearReply();
     _controller.clear();
   }
@@ -80,48 +82,51 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget buildReplyPreview(String groupId, String messageId) {
-    return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance
-          .collection('groups')
-          .doc(groupId)
-          .collection('messages')
-          .doc(messageId)
-          .get(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData || !snapshot.data!.exists) {
-          return const SizedBox();
-        }
+    return BlocConsumer<ReplayMessageCubit, ReplayMessageState>(
+      listener: (context, state) {},
+      builder: (context, state) => FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance
+            .collection('groups')
+            .doc(groupId)
+            .collection('messages')
+            .doc(messageId)
+            .get(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || !snapshot.data!.exists) {
+            return const SizedBox();
+          }
 
-        final replyData = snapshot.data!.data() as Map<String, dynamic>;
-        final replyText = replyData['type'] == 'image'
-            ? '[Image]'
-            : (replyData['message'] ?? '');
+          final replyData = snapshot.data!.data() as Map<String, dynamic>;
+          final replyText = replyData['type'] == 'image'
+              ? '[Image]'
+              : (replyData['message'] ?? '');
 
-        return Container(
-          padding: const EdgeInsets.all(8),
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            color: Colors.green[100],
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Replying to: $replyText',
-                  style: const TextStyle(fontStyle: FontStyle.italic),
+          return Container(
+            padding: const EdgeInsets.all(8),
+            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.green[100],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Replying to: $replyText',
+                    style: const TextStyle(fontStyle: FontStyle.italic),
+                  ),
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () {
-                  BlocProvider.of<ReplayMessageCubit>(context).clearReply();
-                },
-              ),
-            ],
-          ),
-        );
-      },
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    BlocProvider.of<ReplayMessageCubit>(context).clearReply();
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -156,8 +161,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final replyProvider = BlocProvider.of<ReplayMessageCubit>(context);
-    final replyingID = replyProvider.getMessageID;
 
     return Scaffold(
       appBar: AppBar(
@@ -172,9 +175,18 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: GetMessages(widget.group['groupId'], user?.uid ?? ''),
           ),
-
-          if (replyingID != null)
-            buildReplyPreview(widget.group['groupId'], replyingID),
+          BlocBuilder<ReplayMessageCubit, ReplayMessageState>(
+            builder: (context, state) {
+              if (state is ReplayMessageSelected) {
+                return buildReplyPreview(
+                  widget.group['groupId'],
+                  state.messageID,
+                );
+              } else {
+                return const SizedBox();
+              }
+            },
+          ),
 
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -184,7 +196,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   color: isDark ? Colors.grey[800]! : Colors.grey[200]!,
                   spreadRadius: 1,
                   blurRadius: 1,
-                  offset: const Offset(0, 1),
                 ),
               ],
             ),
