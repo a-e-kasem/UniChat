@@ -5,7 +5,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uni_chat/widgets/home/provider_state.dart';
 import 'package:uni_chat/screens/chat/chat_screen.dart';
-import 'package:uni_chat/widgets/home/image_bar.dart';
 
 class BodyInfo extends StatefulWidget {
   const BodyInfo({super.key});

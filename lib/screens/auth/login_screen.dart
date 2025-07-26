@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
+import 'package:uni_chat/business_logic/register_cubit/register_cubit.dart';
 import 'package:uni_chat/models/mode_model.dart';
 import 'package:uni_chat/widgets/auth/login/components/logo_image_show.dart';
 import 'package:uni_chat/widgets/auth/signin_or_signup_form.dart';
-import 'package:uni_chat/models/messageRegister.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -23,15 +24,16 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Consumer<Messageregister>(
-      builder: (context, messageRegister, child) {
-        if (messageRegister.message != null) {
+    return BlocConsumer<RegisterCubit, RegisterState>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        if (state is RegisterDone) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: Colors.green,
                 content: Text(
-                  messageRegister.message!,
+                  BlocProvider.of<RegisterCubit>(context).message!,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -40,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             );
-            messageRegister.clear();
+            BlocProvider.of<RegisterCubit>(context).clear();
           });
         }
 

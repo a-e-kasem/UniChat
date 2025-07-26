@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
+import 'package:uni_chat/business_logic/replay_cubit/replay_message_cubit.dart';
 import 'package:uni_chat/widgets/chat/get_messages.dart';
-import 'package:uni_chat/providers/chat_provider.dart';
 import 'package:uni_chat/services/api/cloudinary_service.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -42,7 +42,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final text = _controller.text.trim();
     if (text.isEmpty || user == null) return;
 
-    final replyProvider = Provider.of<ReplyProvider>(context, listen: false);
+    final replyProvider = BlocProvider.of<ReplayMessageCubit>(context);
     final messageID = replyProvider.getMessageID;
 
     await messages.add({
@@ -63,7 +63,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final imageUrl = await CloudinaryService.uploadImage(source: source);
     if (imageUrl == null || user == null) return;
 
-    final replyProvider = Provider.of<ReplyProvider>(context, listen: false);
+    final replyProvider = BlocProvider.of<ReplayMessageCubit>(context);
     final messageID = replyProvider.getMessageID;
 
     await messages.add({
@@ -88,8 +88,9 @@ class _ChatScreenState extends State<ChatScreen> {
           .doc(messageId)
           .get(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData || !snapshot.data!.exists)
+        if (!snapshot.hasData || !snapshot.data!.exists) {
           return const SizedBox();
+        }
 
         final replyData = snapshot.data!.data() as Map<String, dynamic>;
         final replyText = replyData['type'] == 'image'
@@ -114,10 +115,7 @@ class _ChatScreenState extends State<ChatScreen> {
               IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () {
-                  Provider.of<ReplyProvider>(
-                    context,
-                    listen: false,
-                  ).clearReply();
+                  BlocProvider.of<ReplayMessageCubit>(context).clearReply();
                 },
               ),
             ],
@@ -158,7 +156,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final replyProvider = Provider.of<ReplyProvider>(context);
+    final replyProvider = BlocProvider.of<ReplayMessageCubit>(context);
     final replyingID = replyProvider.getMessageID;
 
     return Scaffold(
