@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EmailDisplay extends StatelessWidget {
-  const EmailDisplay({super.key, required this.user});
+  EmailDisplay({super.key});
 
-  final User? user;
+  final User? user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {

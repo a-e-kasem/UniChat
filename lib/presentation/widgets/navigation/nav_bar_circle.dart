@@ -1,7 +1,7 @@
 import 'package:circle_nav_bar/circle_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:UniChat/logic/swich_pages_cubit/swich_pages_cubit.dart';
+import 'package:UniChat/logic/cubits/swich_pages_cubit/swich_pages_cubit.dart';
 
 class NavBarCircle extends StatelessWidget {
   final void Function(int)? onTap;

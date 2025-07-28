@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:UniChat/core/routes/app_routes.dart';
-import 'package:UniChat/core/themes/app_theme.dart';
-import 'package:UniChat/logic/mode_cubit/mode_cubit.dart';
+import 'package:UniChat/data/core/routes/app_routes.dart';
+import 'package:UniChat/data/core/themes/app_theme.dart';
+import 'package:UniChat/logic/cubits/mode_cubit/mode_cubit.dart';
 import 'package:UniChat/presentation/screens/splash/splash_screen.dart';
 
 class UniChat extends StatelessWidget {
