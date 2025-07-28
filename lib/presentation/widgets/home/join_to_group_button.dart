@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:UniChat/presentation/widgets/home/provider_state.dart';
-import 'package:UniChat/core/consts/consts.dart';
+import 'package:UniChat/data/core/consts/consts.dart';
 
 class JoinToGroupButton extends StatefulWidget {
   final String userId;

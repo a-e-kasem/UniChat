@@ -1,10 +1,10 @@
-import 'package:UniChat/logic/mode_cubit/mode_cubit.dart';
+import 'package:UniChat/logic/cubits/mode_cubit/mode_cubit.dart';
 import 'package:UniChat/presentation/widgets/auth/login/components/logo_image_show.dart';
 import 'package:UniChat/presentation/widgets/auth/signin_or_signup_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:UniChat/logic/register_cubit/register_cubit.dart';
+import 'package:UniChat/logic/cubits/register_cubit/register_cubit.dart';
 
 
 class LoginScreen extends StatefulWidget {

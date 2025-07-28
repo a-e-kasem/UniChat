@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:UniChat/logic/swich_pages_cubit/swich_pages_cubit.dart';
+import 'package:UniChat/logic/cubits/swich_pages_cubit/swich_pages_cubit.dart';
 import 'package:UniChat/presentation/screens/account/account_screen.dart';
 import 'package:UniChat/presentation/screens/home/home_screen.dart';
 import 'package:UniChat/presentation/screens/settings/settings_screen.dart';

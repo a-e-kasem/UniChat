@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:UniChat/logic/mode_cubit/mode_cubit.dart';
+import 'package:UniChat/logic/cubits/mode_cubit/mode_cubit.dart';
 import 'package:UniChat/presentation/widgets/home/join_to_group_button.dart';
 import 'package:UniChat/presentation/widgets/home/provider_state.dart';
 import 'package:UniChat/presentation/screens/auth/login_screen.dart';

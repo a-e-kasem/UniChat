@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:UniChat/logic/replay_cubit/replay_message_cubit.dart';
+import 'package:UniChat/logic/cubits/replay_cubit/replay_message_cubit.dart';
 import 'package:UniChat/presentation/widgets/chat/get_messages.dart';
 import 'package:UniChat/data/services/api/cloudinary_service.dart';
 

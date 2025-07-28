@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:UniChat/logic/replay_cubit/replay_message_cubit.dart';
+import 'package:UniChat/logic/cubits/replay_cubit/replay_message_cubit.dart';
 import 'package:UniChat/presentation/widgets/chat/message_bubble.dart';
 import 'package:UniChat/presentation/widgets/chat/reply_message.dart';
 
