@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:UniChat/data/core/consts/consts.dart';
 
 class DeleteUserButton extends StatefulWidget {
-  const DeleteUserButton({super.key, required this.user});
-  final Map<String, dynamic> user;
+  const DeleteUserButton({super.key, required this.userId});
+  final String userId;
 
   @override
   State<DeleteUserButton> createState() => _DeleteUserButtonState();
@@ -35,8 +35,8 @@ class _DeleteUserButtonState extends State<DeleteUserButton> {
         );
 
         if (confirm == true) {
-          final userId = widget.user['id']?.toString().trim();
-          if (userId == null || userId.isEmpty) {
+          final userId = widget.userId;
+          if (userId.isEmpty) {
             showSnackBarError(context, 'User ID is required');
             return;
           }
@@ -64,7 +64,9 @@ class _DeleteUserButtonState extends State<DeleteUserButton> {
 
             // 
             await userRef.delete();
-
+            setState(() {
+              
+            });
             showSnackBarSuccess(context, 'User deleted successfully');
           } catch (e) {
             showSnackBarError(context, 'Error deleting user: $e');

@@ -13,7 +13,9 @@ class ShowImage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            if (context.mounted) Navigator.of(context).pop();
+          },
         ),
         title: const Text('Image Preview'),
         centerTitle: true,

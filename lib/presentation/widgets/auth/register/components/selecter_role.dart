@@ -1,27 +1,44 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class SelecterRole extends StatefulWidget {
-  const SelecterRole({super.key, required this.role});
-  final TextEditingController role;
-
+class UniversitySelector extends StatefulWidget {
+  const UniversitySelector({super.key, required this.universityDomain});
+  final TextEditingController universityDomain;
   @override
-  State<SelecterRole> createState() => _SelecterRoleState();
+  State<UniversitySelector> createState() => _UniversitySelectorState();
 }
 
-
-class _SelecterRoleState extends State<SelecterRole> {
-  String? selectedRole;
+class _UniversitySelectorState extends State<UniversitySelector> {
+  String? selectedUniversity;
+  Map<String, String> universityMap = {};
 
   @override
   void initState() {
     super.initState();
-    if (widget.role.text.isEmpty) {
-      selectedRole = 'student'; 
-      widget.role.text = selectedRole!;
-    } else {
-      selectedRole = widget.role.text;
-    }
+    fetchUniversities();
+  }
+
+  Future<void> fetchUniversities() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('universities')
+        .orderBy('name')
+        .get();
+
+    setState(() {
+      universityMap = {
+        for (var doc in snapshot.docs)
+          doc['name'].toString(): doc['emailDomain'].toString(),
+      };
+
+      if (widget.universityDomain.text.isNotEmpty) {
+        selectedUniversity = universityMap.keys.firstWhere(
+          (name) => universityMap[name] == widget.universityDomain.text,
+        );
+      }
+    });
   }
 
   @override
@@ -32,10 +49,10 @@ class _SelecterRoleState extends State<SelecterRole> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Role:',
+            'University:',
             style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 6),
           DropdownButtonFormField<String>(
             isExpanded: true,
             decoration: InputDecoration(
@@ -43,20 +60,24 @@ class _SelecterRoleState extends State<SelecterRole> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            value: selectedRole,
-            items: const [
-              DropdownMenuItem(value: 'student', child: Text('Student')),
-              DropdownMenuItem(value: 'teacher', child: Text('Teacher')),
-            ],
+            hint: const Text('Select your university'),
+            value: selectedUniversity,
+            items: universityMap.entries.map((entry) {
+              return DropdownMenuItem(
+                value: entry.value,
+                child: Text(entry.key),
+              );
+            }).toList(),
             onChanged: (value) {
               setState(() {
-                selectedRole = value!;
-                widget.role.text = value;
+                selectedUniversity = value!;
+                widget.universityDomain.text = value;
               });
+              log(value.toString());
             },
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please select your role';
+                return 'Please select your university';
               }
               return null;
             },

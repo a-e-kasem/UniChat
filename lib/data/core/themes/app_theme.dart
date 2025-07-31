@@ -7,7 +7,7 @@ class AppTheme {
     scaffoldBackgroundColor: Colors.white,
     primaryColor: Colors.black,
     appBarTheme: AppBarTheme(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[300],
       iconTheme: const IconThemeData(color: Colors.black),
       titleTextStyle: GoogleFonts.inter(
         color: Colors.black,
