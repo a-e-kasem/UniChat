@@ -1,4 +1,7 @@
 import 'package:UniChat/logic/cubits/account_cubit/account_cubit.dart';
+import 'package:UniChat/logic/cubits/admin_groups_cubit/admin_groups_cubit.dart';
+import 'package:UniChat/logic/cubits/chat_cubit/chat_cubit.dart';
+import 'package:UniChat/logic/cubits/home_cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,6 +26,9 @@ void main() async {
         BlocProvider(create: (_) => SwichPagesCubit()),
         BlocProvider(create: (_) => ModeCubit()),
         BlocProvider(create: (_) => AccountCubit()),
+        BlocProvider(create: (_) => HomeCubit()),
+        BlocProvider(create: (_) => ChatCubit()),
+        BlocProvider(create: (_) => AdminGroupsCubit()),
       ],
       
         child: UniChat(),

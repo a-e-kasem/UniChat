@@ -47,7 +47,7 @@ class _UsersAdminControlScreenState extends State<UsersAdminControlScreen> {
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    DeleteUserButton(user: user),
+                    DeleteUserButton(userId: user['id']),
                     const SizedBox(width: 8),
                     AddToGroupAdminButton(userId: user['id'], userName: user['name'] ?? 'Unknown User'),
                   ],

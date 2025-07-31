@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:UniChat/data/core/consts/consts.dart';
 
+// ignore: must_be_immutable
 class RegisterButtonBox extends StatelessWidget {
-  const RegisterButtonBox({
+  RegisterButtonBox({
     super.key,
     required this.id,
     required this.email,
-    required this.role,
+    required this.universityDomain,
     required this.password,
     required this.confirmPassword,
     required this.formKey,
@@ -18,10 +19,12 @@ class RegisterButtonBox extends StatelessWidget {
 
   final TextEditingController id;
   final TextEditingController email;
-  final TextEditingController role;
+  final TextEditingController universityDomain;
   final TextEditingController password;
   final TextEditingController confirmPassword;
   final GlobalKey<FormState> formKey;
+
+  String role = 'student';
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +32,16 @@ class RegisterButtonBox extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         if (formKey.currentState!.validate()) {
-          if (email.text.contains('@su.edu.eg') == false) {
-            showSnackBarError(context, 'Please use your university email.');
+          if (!email.text.trim().endsWith(
+            '@${universityDomain.text.trim()}.edu.eg',
+          )) {
+            showSnackBarError(
+              context,
+              'Email must end with ${universityDomain.text} Domain',
+            );
             return;
           }
+
           if (password.text != confirmPassword.text) {
             showSnackBarError(context, 'Passwords do not match.');
             return;
@@ -55,7 +64,7 @@ class RegisterButtonBox extends StatelessWidget {
                     'uid': id.text.trim(),
                     'name': id.text.trim(),
                     'email': email.text.trim(),
-                    'role': role.text.trim(),
+                    'role': role,
                     'createdAt': Timestamp.now(),
                   });
 

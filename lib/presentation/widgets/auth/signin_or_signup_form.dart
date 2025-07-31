@@ -93,7 +93,7 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final TextEditingController id = TextEditingController();
   final TextEditingController email = TextEditingController();
-  final TextEditingController role = TextEditingController();
+  final TextEditingController universityDomain = TextEditingController();
   final TextEditingController password = TextEditingController();
   final TextEditingController confirmPassword = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -132,7 +132,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   validatorText: 'Please enter your email',
                 ),
                 const SizedBox(height: 15),
-                SelecterRole(role: role),
+                UniversitySelector(universityDomain: universityDomain),
                 const SizedBox(height: 15),
                 MyTextFormField(
                   controller: password,
@@ -153,7 +153,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 RegisterButtonBox(
                   id: id,
                   email: email,
-                  role: role,
+                  universityDomain: universityDomain,
                   password: password,
                   confirmPassword: confirmPassword,
                   formKey: _formKey,

@@ -1,7 +1,9 @@
 import 'dart:developer';
 import 'package:UniChat/data/core/consts/consts.dart';
+import 'package:UniChat/logic/cubits/home_cubit/home_cubit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:UniChat/presentation/screens/admins/admin_screen.dart';
 import 'package:UniChat/presentation/widgets/navigation/build_pages.dart';
@@ -31,22 +33,23 @@ class LoginButtonBox extends StatelessWidget {
               password: password.text.trim(),
             );
 
+            await context.read<HomeCubit>().getUserGroups();
+
             final User? user = FirebaseAuth.instance.currentUser;
             await user?.reload();
 
             hideLoadingDialog(context);
+
             if (email.text.trim() == 'admin@test.com') {
               log('Admin Login');
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => AdminScreen()),
+                MaterialPageRoute(builder: (context) => const AdminScreen()),
               );
             } else if (user != null && user.emailVerified) {
               log('User Login: ${user.email}');
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => BuildPages()),
-              );
+              
+              Navigator.pushReplacementNamed(context, BuildPages.id);
             } else {
               log('User not verified: ${user?.email}');
               await FirebaseAuth.instance.signOut();
@@ -81,6 +84,7 @@ class LoginButtonBox extends StatelessWidget {
           }
         }
       },
+
       child: Container(
         alignment: Alignment.center,
         width: double.infinity,
