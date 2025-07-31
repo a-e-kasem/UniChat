@@ -14,8 +14,14 @@ import 'package:UniChat/presentation/widgets/chat/reply_message.dart';
 class GetMessages extends StatelessWidget {
   final String chatId;
   final String currentUserId;
+  final bool showNameOfSenderOrNot;
 
-  const GetMessages(this.chatId, this.currentUserId, {super.key});
+  const GetMessages({
+    super.key,
+    required this.chatId,
+    required this.currentUserId,
+    required this.showNameOfSenderOrNot,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +78,20 @@ class GetMessages extends StatelessWidget {
                       ? CrossAxisAlignment.start
                       : CrossAxisAlignment.end,
                   children: [
+                    if (!isMe &&
+                        showNameOfSenderOrNot &&
+                        data['senderName'] != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(
+                          data['senderName'],
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: isDark ? Colors.white70 : Colors.black87,
+                          ),
+                        ),
+                      ),
                     GestureDetector(
                       onLongPress: () {
                         showDialog(
@@ -297,4 +317,3 @@ class GetMessages extends StatelessWidget {
     );
   }
 }
-
