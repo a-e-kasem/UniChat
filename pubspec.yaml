@@ -75,7 +75,6 @@ flutter:
     - assets/logo/logo_white.png
     - assets/logo/logo_black.png
     - assets/images/
-    - assets/serviceAccountKey.json
     - assets/service-account.json
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
