@@ -33,6 +33,12 @@ class _BodyInfoState extends State<BodyInfo> {
           if (groups.isEmpty) {
             return const Center(child: Text("You are not in any group."));
           }
+
+          context.read<HomeCubit>().checkAndUpdateUserTokenInAllGroups(
+            FirebaseAuth.instance.currentUser!.uid,
+            FirebaseAuth.instance.currentUser!.displayName ?? '',
+            groups.map((group) => group.id).toList(),
+          );
           
           return ListView.builder(
             itemCount: groups.length,

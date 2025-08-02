@@ -28,8 +28,7 @@ class HomeCubit extends Cubit<HomeState> {
     }
     return super.close();
   }
-
-  Future<void> getUserGroups() async {
+Future<void> getUserGroups() async {
     emit(HomeGroupsLoading());
 
     final User? user = FirebaseAuth.instance.currentUser;
@@ -57,26 +56,15 @@ class HomeCubit extends Cubit<HomeState> {
           final groupId = doc.id;
           final groupName = doc['name'];
 
-          final groupRef = firestore.collection('groups').doc(groupId);
-          final groupDoc = await groupRef.get();
-          if (!groupDoc.exists) return;
-
-          // 🔁 تأكد من تحديث التوكن داخل members
-          final memberRef = firestore
+          final groupDoc = await firestore
               .collection('groups')
               .doc(groupId)
-              .collection('members')
-              .doc(user.uid);
+              .get();
 
-          final memberDoc = await memberRef.get();
-          if (memberDoc.exists) {
-            final currentToken = memberDoc.data()?['token'];
-            if (currentToken != FirebaseApi.userToken) {
-              await memberRef.update({'token': FirebaseApi.userToken});
-              log('✅ Token updated in group $groupId');
-            }
-          }
+          final groupData = groupDoc.data();
+          if (groupData == null) return;
 
+          // جلب الأعضاء من مجموعة members داخل الجروب
           final membersSnapshot = await firestore
               .collection('groups')
               .doc(groupId)
@@ -96,6 +84,7 @@ class HomeCubit extends Cubit<HomeState> {
 
           groups.add(group);
 
+          // الاستماع لتحديث الرسائل في الجروب
           final sub = firestore
               .collection('groups')
               .doc(groupId)
@@ -149,6 +138,30 @@ class HomeCubit extends Cubit<HomeState> {
       debugPrintStack(stackTrace: stack);
       emit(HomeGroupsError("Failed to load groups and messages."));
       return [];
+    }
+  }
+
+  Future<void> checkAndUpdateUserTokenInAllGroups(
+    String userId,
+    String userName,
+    List<String> userGroupIds,
+  ) async {
+    for (final groupId in userGroupIds) {
+      final memberRef = firestore
+          .collection('groups')
+          .doc(groupId)
+          .collection('members')
+          .doc(userId);
+
+      final memberDoc = await memberRef.get();
+
+      if (memberDoc.exists) {
+        final currentToken = memberDoc.data()?['token'];
+        if (currentToken != FirebaseApi.userToken) {
+          await memberRef.update({'token': FirebaseApi.userToken});
+          log('✅ Token updated in group $groupId');
+        }
+      }
     }
   }
 }
