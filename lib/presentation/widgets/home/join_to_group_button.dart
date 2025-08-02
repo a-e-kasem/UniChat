@@ -18,7 +18,6 @@ class _JoinToGroupButtonState extends State<JoinToGroupButton> {
   final TextEditingController _controller = TextEditingController();
   bool _isLoading = false;
 
-
   Future<void> joinGroup(BuildContext context) async {
     final groupId = _controller.text.trim();
     if (groupId.isEmpty) return;

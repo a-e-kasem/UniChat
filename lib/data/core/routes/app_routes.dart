@@ -26,6 +26,7 @@ class AppRoutes {
   static const String createGroup = CreateGroupScreen.id;
   static const String universityAdminControl = UniversityAdminControleScreen.id;
 
+
   static final Map<String, WidgetBuilder> routes = {
     splash: (_) => SplashScreen(),
     login: (_) => LoginScreen(),
@@ -40,5 +41,6 @@ class AppRoutes {
     groupsAdminControle: (_) => GroupsAdminControleScreen(),
     createGroup: (_) => CreateGroupScreen(),
     universityAdminControl: (_) => UniversityAdminControleScreen(),
+ 
   };
 }

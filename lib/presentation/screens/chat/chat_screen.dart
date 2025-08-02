@@ -1,8 +1,10 @@
 import 'package:UniChat/data/models/group_model.dart';
 import 'package:UniChat/logic/cubits/chat_cubit/chat_cubit.dart';
 import 'package:UniChat/logic/cubits/replay_cubit/replay_message_cubit.dart';
+import 'package:UniChat/presentation/widgets/chat/chat_input_bar.dart';
 import 'package:UniChat/presentation/widgets/chat/get_messages.dart';
 import 'package:UniChat/presentation/widgets/chat/member_details_screen.dart';
+import 'package:UniChat/presentation/widgets/settings/firebase_api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,9 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  List<String> memberId = [];
+  List<String> memberDevicesToken = [];
+  String userToken = '';
   late TextEditingController _controller;
   late CollectionReference messages;
   final User? user = FirebaseAuth.instance.currentUser;
@@ -35,6 +40,8 @@ class _ChatScreenState extends State<ChatScreen> {
         .collection('messages');
 
     loadUserRole();
+    getMemberDevicesToken();
+    getMemberId();
   }
 
   @override
@@ -43,12 +50,50 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  void sendMessage() {
+  void getMemberId() {
+    for (var member in widget.group.members) {
+      memberId.add(member.id);
+    }
+  }
+
+  void getMemberDevicesToken() async {
+    for (var id in memberId) {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(id)
+          .get();
+      if (id == user?.uid) {
+        userToken = doc.data()?['deviceToken'];
+      }
+      memberDevicesToken.add(doc.data()?['deviceToken']);
+    }
+  }
+
+  Future<void> sendNotification(String message) async {
+    final serviceAccountPath = 'service-account.json';
+    final projectId = 'uni-chat-69d59';
+    final sender = FcmSender(serviceAccountPath, projectId);
+    await sender.init();
+
+    for (var memberToken in memberDevicesToken) {
+      if (memberDevicesToken.contains('') || memberToken == userToken) continue;
+      await sender.sendNotification(
+        deviceToken: memberToken,
+        title: widget.group.name,
+        body: message,
+        data: {'click_action': 'FLUTTER_NOTIFICATION_CLICK'},
+      );
+    }
+  }
+
+  Future<void> sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
 
     final replyProvider = context.read<ReplayMessageCubit>();
     final replyMessageID = replyProvider.getMessageID;
+
+    await sendNotification(text);
 
     context.read<ChatCubit>().sendMessage(
       groupId: widget.group.id,
@@ -93,6 +138,44 @@ class _ChatScreenState extends State<ChatScreen> {
               onTap: () {
                 Navigator.pop(context);
                 sendImageFromSource(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void showDoctorAddTools() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.poll),
+              title: const Text('Create Poll'),
+              onTap: () {
+                Navigator.pop(context);
+                // TODO:_OPEN_POLL_SCREEN
+                // Navigator.push(context, MaterialPageRoute(builder: (_) => CreatePollScreen(groupId: widget.group.id)));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.insert_drive_file),
+              title: const Text('Upload File'),
+              onTap: () {
+                Navigator.pop(context);
+                // TODO:_OPEN_FILE_PICKER
+                // context.read<ChatCubit>().uploadFile(...);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.announcement),
+              title: const Text('Send Announcement'),
+              onTap: () {
+                Navigator.pop(context);
+                // TODO:_OPEN_ANNOUNCEMENT_SCREEN
               },
             ),
           ],
@@ -165,12 +248,10 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  bool get isAdminOrDoctor => role == 'admin' || role == 'doctor';
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    final userIsDoctor = role == 'doctor';
-    final userIsAdmin = role == 'admin';
 
     return BlocProvider(
       create: (_) => ChatCubit(),
@@ -182,15 +263,18 @@ class _ChatScreenState extends State<ChatScreen> {
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           actions: [
-            userIsAdmin || userIsDoctor
+            isAdminOrDoctor
                 ? IconButton(
                     icon: const Icon(Icons.group),
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                              MemberDetailsScreen(group: widget.group),
+                          builder: (_) => MemberDetailsScreen(
+                            group: widget.group,
+                            currentUserId: user?.uid ?? '',
+                            currentUserRole: role ?? '',
+                          ),
                         ),
                       );
                     },
@@ -204,7 +288,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child: GetMessages(
                 chatId: widget.group.id,
                 currentUserId: user?.uid ?? '',
-                showNameOfSenderOrNot: userIsAdmin || userIsDoctor,
+                showNameOfSenderOrNot: isAdminOrDoctor,
               ),
             ),
             BlocBuilder<ReplayMessageCubit, ReplayMessageState>(
@@ -239,28 +323,21 @@ class _ChatScreenState extends State<ChatScreen> {
                       onPressed: showImagePicker,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      decoration: InputDecoration(
-                        hintText: 'Type a message...',
-                        filled: true,
-                        fillColor: isDark
-                            ? Colors.grey[700]
-                            : Colors.green[100],
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
+
+                  // const SizedBox(width: 5),
+                  // Container(
+                  //   decoration: BoxDecoration(
+                  //     color: isDark ? Colors.grey[700] : Colors.green[100],
+                  //     shape: BoxShape.circle,
+                  //   ),
+                  //   child: IconButton(
+                  //     icon: const Icon(Icons.add),
+                  //     onPressed: showDoctorAddTools,
+                  //   ),
+                  // ),
+                  const SizedBox(width: 5),
+                  Expanded(child: ChatInputBar(controller: _controller)),
+                  const SizedBox(width: 5),
                   Container(
                     decoration: BoxDecoration(
                       color: isDark ? Colors.grey[700] : Colors.green[100],
@@ -268,7 +345,9 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     child: IconButton(
                       icon: const Icon(Icons.send),
-                      onPressed: sendMessage,
+                      onPressed: () async {
+                        await sendMessage();
+                      },
                     ),
                   ),
                 ],

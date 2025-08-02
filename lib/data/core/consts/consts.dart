@@ -45,3 +45,4 @@ void showLoadingDialog(BuildContext context) {
 void hideLoadingDialog(BuildContext context) {
   Navigator.of(context, rootNavigator: true).pop();
 }
+

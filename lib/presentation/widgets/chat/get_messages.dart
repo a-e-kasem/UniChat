@@ -1,7 +1,5 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:context_menu_android/features/context_menu/data/models/context_menu.dart';
-import 'package:context_menu_android/features/context_menu/presentation/widget/ios_style_context_menu.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -92,131 +90,95 @@ class GetMessages extends StatelessWidget {
                           ),
                         ),
                       ),
+
                     GestureDetector(
                       onLongPress: () {
                         showDialog(
                           context: context,
-                          builder: (ctx) => IosStyleContextMenu(
-                            actions: [
-                              ContextMenuAndroid(
-                                icon: FontAwesomeIcons.reply,
-                                label: 'Reply',
-                                onTap: () {
-                                  log('Reply pressed');
-                                  BlocProvider.of<ReplayMessageCubit>(
-                                    context,
-                                  ).setReply(messages[index].id);
-                                },
+                          builder: (ctx) => Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            backgroundColor: Theme.of(context).cardColor,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 16,
+                                horizontal: 16,
                               ),
-                              ContextMenuAndroid(
-                                icon: Icons.copy,
-                                label: 'Copy',
-                                onTap: () {
-                                  log('Copy pressed');
-                                  Clipboard.setData(
-                                    ClipboardData(text: message),
-                                  );
-                                },
-                              ),
-                              ContextMenuAndroid(
-                                icon: Icons.delete,
-                                label: 'Delete',
-                                onTap: () {
-                                  log('Delete pressed');
-                                  FirebaseFirestore.instance
-                                      .collection('groups')
-                                      .doc(chatId)
-                                      .collection('messages')
-                                      .doc(messages[index].id)
-                                      .delete();
-                                },
-                              ),
-                            ],
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                              ),
-                              padding: const EdgeInsets.all(16),
-                              child: Row(
-                                mainAxisAlignment: isMe
-                                    ? MainAxisAlignment.start
-                                    : MainAxisAlignment.end,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  if (!isMe)
-                                    GestureDetector(
-                                      onTap: () {
-                                        log('Reply tapped');
-                                        BlocProvider.of<ReplayMessageCubit>(
-                                          context,
-                                        ).setReply(messages[index].id);
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.all(7),
-                                        margin: const EdgeInsets.only(right: 8),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            999,
-                                          ),
-                                          color: isDark
-                                              ? Colors.grey[700]
-                                              : Colors.grey[300],
-                                        ),
-                                        child: Icon(
-                                          FontAwesomeIcons.reply,
-                                          size: 16,
-                                          color: isDark
-                                              ? Colors.grey[300]
-                                              : Colors.grey[700],
-                                        ),
-                                      ),
-                                    ),
+                                  // Emoji reaction row
+                                  Wrap(
+                                    alignment: WrapAlignment.center,
+                                    spacing: 12,
+                                    children: ['❤️', '😂', '👍', '😢', '🔥']
+                                        .map((emoji) {
+                                          return GestureDetector(
+                                            onTap: () async {
+                                              final userId = FirebaseAuth
+                                                  .instance
+                                                  .currentUser!
+                                                  .uid;
+                                              await FirebaseFirestore.instance
+                                                  .collection('groups')
+                                                  .doc(chatId)
+                                                  .collection('messages')
+                                                  .doc(messages[index].id)
+                                                  .update({
+                                                    'reactions.$userId': emoji,
+                                                  });
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              emoji,
+                                              style: const TextStyle(
+                                                fontSize: 30,
+                                              ),
+                                            ),
+                                          );
+                                        })
+                                        .toList(),
+                                  ),
 
-                                  Container(
-                                    padding: const EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                      color: isMe
-                                          ? (isDark
-                                                ? Colors.blueAccent[700]
-                                                : Colors.lightBlue[400])
-                                          : (isDark
-                                                ? Colors.grey[700]
-                                                : Colors.grey[400]),
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: const Radius.circular(16),
-                                        topRight: const Radius.circular(16),
-                                        bottomRight: isMe
-                                            ? const Radius.circular(16)
-                                            : Radius.zero,
-                                        bottomLeft: isMe
-                                            ? Radius.zero
-                                            : const Radius.circular(16),
-                                      ),
+                                  const Divider(height: 30),
+
+                                  // Action list
+                                  ListTile(
+                                    leading: const Icon(
+                                      FontAwesomeIcons.reply,
+                                      size: 20,
                                     ),
-                                    child: Column(
-                                      children: [
-                                        messageReply != ''
-                                            ? ReplyMessage(
-                                                messageReply: messageReply,
-                                                chatId: chatId,
-                                                isMe: isMe,
-                                                isDark: isDark,
-                                                typeMessage: typeMessage,
-                                                imageUrl: imageUrl,
-                                              )
-                                            : SizedBox(),
-                                        MessageBubble(
-                                          isMe: isMe,
-                                          isDark: isDark,
-                                          typeMessage: typeMessage,
-                                          imageUrl: imageUrl,
-                                          message: message,
-                                        ),
-                                      ],
-                                    ),
+                                    title: const Text('Reply'),
+                                    onTap: () {
+                                      context
+                                          .read<ReplayMessageCubit>()
+                                          .setReply(messages[index].id);
+                                      Navigator.pop(ctx);
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: const Icon(Icons.copy, size: 20),
+                                    title: const Text('Copy'),
+                                    onTap: () {
+                                      Clipboard.setData(
+                                        ClipboardData(text: message),
+                                      );
+                                      Navigator.pop(ctx);
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: const Icon(Icons.delete, size: 20),
+                                    title: const Text('Delete'),
+                                    onTap: () {
+                                      FirebaseFirestore.instance
+                                          .collection('groups')
+                                          .doc(chatId)
+                                          .collection('messages')
+                                          .doc(messages[index].id)
+                                          .delete();
+                                      Navigator.pop(ctx);
+                                    },
                                   ),
                                 ],
                               ),
@@ -224,6 +186,7 @@ class GetMessages extends StatelessWidget {
                           ),
                         );
                       },
+
                       child: Row(
                         mainAxisAlignment: isMe
                             ? MainAxisAlignment.start
@@ -232,10 +195,9 @@ class GetMessages extends StatelessWidget {
                           if (!isMe)
                             GestureDetector(
                               onTap: () {
-                                log('Reply tapped');
-                                BlocProvider.of<ReplayMessageCubit>(
-                                  context,
-                                ).setReply(messages[index].id);
+                                context.read<ReplayMessageCubit>().setReply(
+                                  messages[index].id,
+                                );
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(7),
@@ -279,22 +241,24 @@ class GetMessages extends StatelessWidget {
                             ),
                             child: Column(
                               children: [
-                                messageReply != ''
-                                    ? ReplyMessage(
-                                        messageReply: messageReply,
-                                        chatId: chatId,
-                                        isMe: isMe,
-                                        isDark: isDark,
-                                        typeMessage: typeMessage,
-                                        imageUrl: imageUrl,
-                                      )
-                                    : SizedBox(),
+                                if (messageReply != '')
+                                  ReplyMessage(
+                                    messageReply: messageReply,
+                                    chatId: chatId,
+                                    isMe: isMe,
+                                    isDark: isDark,
+                                    typeMessage: typeMessage,
+                                    imageUrl: imageUrl,
+                                  ),
                                 MessageBubble(
                                   isMe: isMe,
                                   isDark: isDark,
                                   typeMessage: typeMessage,
                                   imageUrl: imageUrl,
                                   message: message,
+                                  reactions:
+                                      data['reactions']
+                                          as Map<String, dynamic>?,
                                 ),
                               ],
                             ),
@@ -302,6 +266,7 @@ class GetMessages extends StatelessWidget {
                         ],
                       ),
                     ),
+
                     if (time.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),

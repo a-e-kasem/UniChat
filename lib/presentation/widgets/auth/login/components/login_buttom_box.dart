@@ -1,7 +1,9 @@
 import 'dart:developer';
 import 'package:UniChat/data/core/consts/consts.dart';
 import 'package:UniChat/logic/cubits/home_cubit/home_cubit.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -33,22 +35,56 @@ class LoginButtonBox extends StatelessWidget {
               password: password.text.trim(),
             );
 
-            await context.read<HomeCubit>().getUserGroups();
-
+            final allUniversities = await context
+                .read<HomeCubit>()
+                .getAllUniversities();
             final User? user = FirebaseAuth.instance.currentUser;
             await user?.reload();
 
             hideLoadingDialog(context);
+            final token = await FirebaseMessaging.instance.getToken();
 
             if (email.text.trim() == 'admin@test.com') {
+              await FirebaseFirestore.instance
+                  .collection('admins')
+                  .doc(email.text)
+                  .set({
+                    'fcmToken': token,
+                    'name': 'Admin', // optional
+                  }, SetOptions(merge: true));
               log('Admin Login');
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => const AdminScreen()),
               );
             } else if (user != null && user.emailVerified) {
+              if (user.email == 'a.ali2672@su.edu.eg') {
+                await FirebaseFirestore.instance
+                    .collection('admins')
+                    .doc(email.text)
+                    .set({
+                      'fcmToken': token,
+                      'name': user.displayName, // optional
+                    }, SetOptions(merge: true));
+              }
+
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(user.uid)
+                  .set({'fcmToken': token}, SetOptions(merge: true));
+
+              context.read<HomeCubit>().getUserGroups();
+              for (var uni in allUniversities) {
+                if (email.text.contains(uni)) {
+                  FirebaseFirestore.instance
+                      .collection('universities')
+                      .doc(uni)
+                      .collection('Users')
+                      .doc(user.email)
+                      .set({'name': user.displayName, 'role': 'student'});
+                }
+              }
               log('User Login: ${user.email}');
-              
               Navigator.pushReplacementNamed(context, BuildPages.id);
             } else {
               log('User not verified: ${user?.email}');

@@ -13,9 +13,9 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(HomeInitial());
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final User? user = FirebaseAuth.instance.currentUser;
 
   final List<StreamSubscription> _groupSubscriptions = [];
+  List<String> Domains = [];
 
   // Cleanup when done
   @override
@@ -29,6 +29,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> getUserGroups() async {
     emit(HomeGroupsLoading());
 
+    final User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       emit(HomeGroupsError("User is not logged in."));
       return;
@@ -37,7 +38,7 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       final snapshot = await firestore
           .collection('users')
-          .doc(user!.uid)
+          .doc(user.uid)
           .collection('groups')
           .get();
 
@@ -64,20 +65,25 @@ class HomeCubit extends Cubit<HomeState> {
             .orderBy('time', descending: true)
             .snapshots()
             .listen((snapshot) {
-          final updatedMessages = snapshot.docs
-              .map((doc) => MessageModel.fromDoc(doc))
-              .toList();
+              final updatedMessages = snapshot.docs
+                  .map((doc) => MessageModel.fromDoc(doc))
+                  .toList();
 
-          // Update the group messages
-          final updatedGroups = groups.map((g) {
-            if (g.id == groupId) {
-              return GroupModel(id: g.id, name: g.name, messages: updatedMessages, members: []);
-            }
-            return g;
-          }).toList();
+              // Update the group messages
+              final updatedGroups = groups.map((g) {
+                if (g.id == groupId) {
+                  return GroupModel(
+                    id: g.id,
+                    name: g.name,
+                    messages: updatedMessages,
+                    members: [],
+                  );
+                }
+                return g;
+              }).toList();
 
-          emit(HomeGroupsLoaded(updatedGroups));
-        });
+              emit(HomeGroupsLoaded(updatedGroups));
+            });
 
         _groupSubscriptions.add(sub);
       }
@@ -88,6 +94,23 @@ class HomeCubit extends Cubit<HomeState> {
       debugPrint('Error: $e');
       debugPrintStack(stackTrace: stack);
       emit(HomeGroupsError("Failed to load groups and messages."));
+    }
+  }
+
+  Future<List<String>> getAllUniversities() async {
+    try {
+      final snapshot = await firestore.collection('universities').get();
+      Domains = [];
+      for (var uni in snapshot.docs) {
+        final uniId = uni.id;
+        Domains.add(uniId);
+      }
+      return Domains;
+    } catch (e, stack) {
+      debugPrint('Error: $e');
+      debugPrintStack(stackTrace: stack);
+      emit(HomeGroupsError("Failed to load groups and messages."));
+      return [];
     }
   }
 }

@@ -1,6 +1,8 @@
+import 'dart:developer';
 
 import 'package:UniChat/presentation/widgets/admin/screens/groups_admin_controle_screen.dart';
 import 'package:UniChat/presentation/widgets/admin/screens/university_admin_controle_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:UniChat/presentation/screens/auth/login_screen.dart';
@@ -10,11 +12,28 @@ class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
   static const String id = 'AdminScreen';
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: GestureDetector(
+          onTap: () async {
+            final adminDoc = await FirebaseFirestore.instance
+                .collection('admins')
+                .doc('admin@test.com')
+                .get();
+            final targetFCMToken = adminDoc.data()?['fcmToken'];
+
+            if (targetFCMToken != null) {
+              log(targetFCMToken);
+            }
+          },
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(Icons.send),
+          ),
+        ),
+
         title: const Text('Admin Screen'),
         centerTitle: true,
 

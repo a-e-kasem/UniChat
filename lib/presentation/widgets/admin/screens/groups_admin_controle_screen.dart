@@ -101,9 +101,22 @@ class _GroupsAdminControleScreenState extends State<GroupsAdminControleScreen> {
                         ),
                         child: ListTile(
                           leading: const Icon(Icons.group, size: 40,),
-                          title: Text(
-                            group.name,
-                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                group.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                group.id,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
                           subtitle: Text('${group.members.length} members'),
                           trailing: IconButton(

@@ -28,9 +28,12 @@ class _UniversityAdminControleScreenState
     }
 
     try {
-      await FirebaseFirestore.instance.collection('universities').add({
-        'name': universityName,
-        'emailDomain': emailExample,
+      final groupId = '${emailExample}';
+      await FirebaseFirestore.instance
+          .collection('universities')
+          .doc(groupId)
+          .set({
+            'name': universityName,
         'adminEmail': adminEmail,
         'createdAt': Timestamp.now(),
       });

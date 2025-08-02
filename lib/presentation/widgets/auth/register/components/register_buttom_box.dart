@@ -11,15 +11,15 @@ class RegisterButtonBox extends StatelessWidget {
     super.key,
     required this.id,
     required this.email,
-    required this.universityDomain,
+    required this.name,
     required this.password,
     required this.confirmPassword,
     required this.formKey,
   });
 
+  final TextEditingController name;
   final TextEditingController id;
   final TextEditingController email;
-  final TextEditingController universityDomain;
   final TextEditingController password;
   final TextEditingController confirmPassword;
   final GlobalKey<FormState> formKey;
@@ -33,11 +33,11 @@ class RegisterButtonBox extends StatelessWidget {
       onTap: () async {
         if (formKey.currentState!.validate()) {
           if (!email.text.trim().endsWith(
-            '@${universityDomain.text.trim()}.edu.eg',
+            '.edu.eg',
           )) {
             showSnackBarError(
               context,
-              'Email must end with ${universityDomain.text} Domain',
+              'Email must end with .edu.eg Domain',
             );
             return;
           }
@@ -62,14 +62,14 @@ class RegisterButtonBox extends StatelessWidget {
                   .doc(user.uid)
                   .set({
                     'uid': id.text.trim(),
-                    'name': id.text.trim(),
+                    'name': name.text.trim(),
                     'email': email.text.trim(),
                     'role': role,
                     'createdAt': Timestamp.now(),
                   });
 
               // update display name
-              await user.updateDisplayName(id.text.trim());
+              await user.updateDisplayName(name.text.trim());
               await user.reload();
 
               // send email verification

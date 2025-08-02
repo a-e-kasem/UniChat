@@ -4,12 +4,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:UniChat/logic/cubits/group_details_cubit/group_details_cubit.dart';
 
 class MemberDetailsScreen extends StatelessWidget {
-  const MemberDetailsScreen({super.key, required this.group});
+  const MemberDetailsScreen({
+    super.key,
+    required this.group,
+    required this.currentUserId,
+    required this.currentUserRole,
+  });
 
   final GroupModel group;
+  final String currentUserId;
+  final String currentUserRole;
 
   @override
   Widget build(BuildContext context) {
+    final isDoctor = currentUserRole == 'doctor';
 
     return BlocProvider(
       create: (_) => GroupDetailsCubit(group)..loadMembers(),
@@ -47,35 +55,38 @@ class MemberDetailsScreen extends StatelessWidget {
                       leading: const Icon(Icons.person),
                       title: Text(member.name),
                       subtitle: Text('Role: ${member.role}'),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (member.role != 'doctor' && member.role != 'admin')
-                            IconButton(
-                              icon: const Icon(
-                                Icons.upgrade,
-                                color: Colors.blue,
-                              ),
-                              onPressed: () {
-                                context
-                                    .read<GroupDetailsCubit>()
-                                    .promoteToAdmin(member.id);
-                              },
+                      trailing: isDoctor && member.id != currentUserId
+                          ? Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (member.role != 'doctor' &&
+                                    member.role != 'admin')
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.upgrade,
+                                      color: Colors.blue,
+                                    ),
+                                    onPressed: () {
+                                      context
+                                          .read<GroupDetailsCubit>()
+                                          .promoteToAdmin(member.id);
+                                    },
+                                  )
+                                else if (member.role == 'admin')
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.arrow_downward,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      context
+                                          .read<GroupDetailsCubit>()
+                                          .demoteToMember(member.id);
+                                    },
+                                  ),
+                              ],
                             )
-                          else if (member.role == 'admin')
-                            IconButton(
-                              icon: const Icon(
-                                Icons.arrow_downward,
-                                color: Colors.red,
-                              ),
-                              onPressed: () {
-                                context
-                                    .read<GroupDetailsCubit>()
-                                    .demoteToMember(member.id);
-                              },
-                            ),
-                        ],
-                      ),
+                          : null,
                     );
                   },
                 );

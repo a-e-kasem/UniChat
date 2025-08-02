@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:UniChat/presentation/widgets/auth/register/components/selecter_role.dart';
 import 'package:UniChat/presentation/widgets/auth/text_field_in_form.dart';
 import 'package:UniChat/presentation/widgets/auth/login/components/login_buttom_box.dart';
 import 'package:UniChat/presentation/widgets/auth/register/components/register_buttom_box.dart';
@@ -93,7 +92,7 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final TextEditingController id = TextEditingController();
   final TextEditingController email = TextEditingController();
-  final TextEditingController universityDomain = TextEditingController();
+  final TextEditingController name = TextEditingController();
   final TextEditingController password = TextEditingController();
   final TextEditingController confirmPassword = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -117,6 +116,14 @@ class _RegisterFormState extends State<RegisterForm> {
                 
                 const SizedBox(height: 30),
                 MyTextFormField(
+                  controller: name,
+                  obscureText: false,
+                  labelText: 'Name:',
+                  hintText: 'Enter your name',
+                  validatorText: 'Please enter your name',
+                ),
+                const SizedBox(height: 15),
+                MyTextFormField(
                   controller: id,
                   obscureText: false,
                   labelText: 'ID:',
@@ -131,8 +138,6 @@ class _RegisterFormState extends State<RegisterForm> {
                   hintText: 'Enter your email',
                   validatorText: 'Please enter your email',
                 ),
-                const SizedBox(height: 15),
-                UniversitySelector(universityDomain: universityDomain),
                 const SizedBox(height: 15),
                 MyTextFormField(
                   controller: password,
@@ -153,7 +158,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 RegisterButtonBox(
                   id: id,
                   email: email,
-                  universityDomain: universityDomain,
+                  name: name,
                   password: password,
                   confirmPassword: confirmPassword,
                   formKey: _formKey,

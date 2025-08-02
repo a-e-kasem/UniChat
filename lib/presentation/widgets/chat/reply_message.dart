@@ -26,6 +26,7 @@ class ReplyMessage extends StatefulWidget {
 
 class _ReplyMessageState extends State<ReplyMessage> {
   DocumentSnapshot? _cachedReply;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -35,23 +36,36 @@ class _ReplyMessageState extends State<ReplyMessage> {
 
   Future<void> fetchReply() async {
     if (widget.messageReply.isNotEmpty) {
-      final reply = await FirebaseFirestore.instance
-          .collection('groups')
-          .doc(widget.chatId)
-          .collection('messages')
-          .doc(widget.messageReply)
-          .get();
-      if (mounted) {
-        setState(() {
-          _cachedReply = reply;
-        });
+      try {
+        final reply = await FirebaseFirestore.instance
+            .collection('groups')
+            .doc(widget.chatId)
+            .collection('messages')
+            .doc(widget.messageReply)
+            .get();
+
+        if (mounted) {
+          setState(() {
+            _cachedReply = reply;
+            _isLoading = false;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _cachedReply = null;
+            _isLoading = false;
+          });
+        }
       }
+    } else {
+      _isLoading = false;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_cachedReply == null) {
+    if (_isLoading) {
       return const Padding(
         padding: EdgeInsets.all(8.0),
         child: SizedBox(
@@ -62,7 +76,7 @@ class _ReplyMessageState extends State<ReplyMessage> {
       );
     }
 
-    if (!_cachedReply!.exists) {
+    if (_cachedReply == null || !_cachedReply!.exists) {
       return _buildReplyContainer(
         const Text(
           'Deleted message',
@@ -105,6 +119,7 @@ class _ReplyMessageState extends State<ReplyMessage> {
         Text(
           replyText,
           style: const TextStyle(fontSize: 14),
+          maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
       );
@@ -112,27 +127,32 @@ class _ReplyMessageState extends State<ReplyMessage> {
   }
 
   Widget _buildReplyContainer(Widget child) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      margin: const EdgeInsets.only(bottom: 4),
-      decoration: BoxDecoration(
-        color: widget.isMe
-            ? (widget.isDark ? Colors.blueAccent[200] : Colors.lightBlue[100])
-            : (widget.isDark ? Colors.grey[500] : Colors.grey[200]),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-          bottomRight: Radius.zero,
-          bottomLeft: Radius.zero,
-        ),
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.7,
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.reply, size: 16, color: Colors.grey),
-          const SizedBox(width: 8),
-          Flexible(child: child),
-        ],
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        margin: const EdgeInsets.only(bottom: 4),
+        decoration: BoxDecoration(
+          color: widget.isMe
+              ? (widget.isDark ? Colors.blueAccent[200] : Colors.lightBlue[100])
+              : (widget.isDark ? Colors.grey[500] : Colors.grey[200]),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+            bottomRight: Radius.zero,
+            bottomLeft: Radius.zero,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.reply, size: 16, color: Colors.grey),
+            const SizedBox(width: 8),
+            Flexible(child: child),
+          ],
+        ),
       ),
     );
   }
