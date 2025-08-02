@@ -1,4 +1,7 @@
 import 'package:UniChat/logic/cubits/home_cubit/home_cubit.dart';
+import 'package:UniChat/presentation/widgets/settings/firebase_api.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,6 +16,7 @@ class BodyInfo extends StatefulWidget {
 }
 
 class _BodyInfoState extends State<BodyInfo> {
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -29,7 +33,7 @@ class _BodyInfoState extends State<BodyInfo> {
           if (groups.isEmpty) {
             return const Center(child: Text("You are not in any group."));
           }
-
+          
           return ListView.builder(
             itemCount: groups.length,
             itemBuilder: (context, index) {

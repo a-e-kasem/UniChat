@@ -1,5 +1,6 @@
 import 'package:UniChat/data/core/consts/consts.dart';
 import 'package:UniChat/logic/cubits/home_cubit/home_cubit.dart';
+import 'package:UniChat/presentation/widgets/settings/firebase_api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,6 +59,7 @@ class _JoinToGroupButtonState extends State<JoinToGroupButton> {
         'joinedAt': Timestamp.now(),
         'name': widget.userName ?? 'Anonymous',
         'role': 'student',
+        'token': FirebaseApi.userToken,
       });
 
       await userRef.collection('groups').doc(groupId).set({

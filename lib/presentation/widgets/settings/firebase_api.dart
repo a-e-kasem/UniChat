@@ -9,6 +9,7 @@ import 'package:googleapis_auth/auth_io.dart';
 class FirebaseApi {
   final _firebaseMessage = FirebaseMessaging.instance;
   final _messageStream = FirebaseMessaging.onMessage;
+  static String? userToken;
 
   Stream<RemoteMessage> get messageStream => _messageStream;
 
@@ -19,9 +20,10 @@ class FirebaseApi {
     await _firebaseMessage.requestPermission();
 
     await _initLocalNotification();
+     
+    userToken = await _firebaseMessage.getToken();
+    log('FCM Token: $userToken');
 
-    final fcmToken = await _firebaseMessage.getToken();
-    log('FCM Token: $fcmToken');
     iniPushNotification();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -84,7 +86,7 @@ class FirebaseApi {
 }
 
 class FcmSender {
-  final String _serviceAccountJsonPath; 
+  final String _serviceAccountJsonPath;
   final String _projectId;
   late AutoRefreshingAuthClient _client;
 

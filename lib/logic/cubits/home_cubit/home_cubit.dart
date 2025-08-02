@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:UniChat/data/models/member_model.dart';
+import 'package:UniChat/presentation/widgets/settings/firebase_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -36,60 +39,95 @@ class HomeCubit extends Cubit<HomeState> {
     }
 
     try {
-      final snapshot = await firestore
+      final userGroupsSnapshot = await firestore
           .collection('users')
           .doc(user.uid)
           .collection('groups')
           .get();
 
-      List<GroupModel> groups = [];
-
-      for (var doc in snapshot.docs) {
-        final groupId = doc.id;
-        final groupName = doc['name'];
-
-        final group = GroupModel(
-          id: groupId,
-          name: groupName,
-          messages: [],
-          members: [],
-        );
-
-        groups.add(group);
-
-        // Start real-time listener for messages in this group
-        final sub = firestore
-            .collection('groups')
-            .doc(groupId)
-            .collection('messages')
-            .orderBy('time', descending: true)
-            .snapshots()
-            .listen((snapshot) {
-              final updatedMessages = snapshot.docs
-                  .map((doc) => MessageModel.fromDoc(doc))
-                  .toList();
-
-              // Update the group messages
-              final updatedGroups = groups.map((g) {
-                if (g.id == groupId) {
-                  return GroupModel(
-                    id: g.id,
-                    name: g.name,
-                    messages: updatedMessages,
-                    members: [],
-                  );
-                }
-                return g;
-              }).toList();
-
-              emit(HomeGroupsLoaded(updatedGroups));
-            });
-
-        _groupSubscriptions.add(sub);
+      if (userGroupsSnapshot.docs.isEmpty) {
+        emit(HomeGroupsLoaded([]));
+        return;
       }
 
-      // Emit initial empty groups while listeners update in background
+      List<GroupModel> groups = [];
+
+      await Future.wait(
+        userGroupsSnapshot.docs.map((doc) async {
+          final groupId = doc.id;
+          final groupName = doc['name'];
+
+          final groupRef = firestore.collection('groups').doc(groupId);
+          final groupDoc = await groupRef.get();
+          if (!groupDoc.exists) return;
+
+          // 🔁 تأكد من تحديث التوكن داخل members
+          final memberRef = firestore
+              .collection('groups')
+              .doc(groupId)
+              .collection('members')
+              .doc(user.uid);
+
+          final memberDoc = await memberRef.get();
+          if (memberDoc.exists) {
+            final currentToken = memberDoc.data()?['token'];
+            if (currentToken != FirebaseApi.userToken) {
+              await memberRef.update({'token': FirebaseApi.userToken});
+              log('✅ Token updated in group $groupId');
+            }
+          }
+
+          final membersSnapshot = await firestore
+              .collection('groups')
+              .doc(groupId)
+              .collection('members')
+              .get();
+
+          List<MemberModel> members = membersSnapshot.docs
+              .map((doc) => MemberModel.fromDoc(doc))
+              .toList();
+
+          final group = GroupModel(
+            id: groupId,
+            name: groupName,
+            messages: [],
+            members: members,
+          );
+
+          groups.add(group);
+
+          final sub = firestore
+              .collection('groups')
+              .doc(groupId)
+              .collection('messages')
+              .orderBy('time', descending: true)
+              .snapshots()
+              .listen((snapshot) {
+                final updatedMessages = snapshot.docs
+                    .map((doc) => MessageModel.fromDoc(doc))
+                    .toList();
+
+                final updatedGroups = groups.map((g) {
+                  if (g.id == groupId) {
+                    return GroupModel(
+                      id: g.id,
+                      name: g.name,
+                      messages: updatedMessages,
+                      members: g.members,
+                    );
+                  }
+                  return g;
+                }).toList();
+
+                emit(HomeGroupsLoaded(updatedGroups));
+              });
+
+          _groupSubscriptions.add(sub);
+        }),
+      );
+
       emit(HomeGroupsLoaded(groups));
+      log('[debug] ${groups[0].name} has ${groups[0].members.length} members');
     } catch (e, stack) {
       debugPrint('Error: $e');
       debugPrintStack(stackTrace: stack);

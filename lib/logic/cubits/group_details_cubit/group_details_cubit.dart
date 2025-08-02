@@ -42,7 +42,12 @@ class GroupDetailsCubit extends Cubit<GroupDetailsState> {
 
       final updated = (state as GroupDetailsLoaded).members.map((m) {
         if (m.id == memberId) {
-          return MemberModel(id: m.id, name: m.name, role: 'admin');
+          return MemberModel(
+            id: m.id,
+            name: m.name,
+            role: 'admin',
+            token: m.token,
+          );
         }
         return m;
       }).toList();
@@ -64,7 +69,12 @@ class GroupDetailsCubit extends Cubit<GroupDetailsState> {
 
       final updated = (state as GroupDetailsLoaded).members.map((m) {
         if (m.id == memberId) {
-          return MemberModel(id: m.id, name: m.name, role: 'student');
+          return MemberModel(
+            id: m.id,
+            name: m.name,
+            role: 'student',
+            token: m.token,
+          );
         }
         return m;
       }).toList();
@@ -77,6 +87,13 @@ class GroupDetailsCubit extends Cubit<GroupDetailsState> {
 
   Future<void> removeMember(String memberId) async {
     try {
+      await firestore
+          .collection('users')
+          .doc(memberId)
+          .collection('groups')
+          .doc(group.id)
+          .delete();
+
       await firestore
           .collection('groups')
           .doc(group.id)

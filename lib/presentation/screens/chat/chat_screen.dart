@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:UniChat/data/models/group_model.dart';
 import 'package:UniChat/logic/cubits/chat_cubit/chat_cubit.dart';
 import 'package:UniChat/logic/cubits/replay_cubit/replay_message_cubit.dart';
@@ -22,7 +24,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  List<String> memberId = [];
+
   List<String> memberDevicesToken = [];
   String userToken = '';
   late TextEditingController _controller;
@@ -38,10 +40,10 @@ class _ChatScreenState extends State<ChatScreen> {
         .collection('groups')
         .doc(widget.group.id)
         .collection('messages');
-
+   
     loadUserRole();
-    getMemberDevicesToken();
-    getMemberId();
+    prepareMemberTokens();
+    log('memberDevicesToken length: ${memberDevicesToken.length}');
   }
 
   @override
@@ -50,39 +52,45 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  void getMemberId() {
-    for (var member in widget.group.members) {
-      memberId.add(member.id);
-    }
-  }
 
-  void getMemberDevicesToken() async {
-    for (var id in memberId) {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(id)
-          .get();
-      if (id == user?.uid) {
-        userToken = doc.data()?['deviceToken'];
-      }
-      memberDevicesToken.add(doc.data()?['deviceToken']);
+  Future<void> prepareMemberTokens() async {
+    log('Start prepareMemberTokens');
+    log('widget.group.id: ${widget.group.id}');
+    log('Total members: ${widget.group.members.length}');
+    if (widget.group.members.isEmpty) {
+      return;
+    }
+    memberDevicesToken.clear();
+    log('Start Loop');
+    for (var member in widget.group.members) {
+      log('member.id: ${member.id}');
+      final token = member.token;
+      log('token: $token');
+      if (token == FirebaseApi.userToken) continue;
+      memberDevicesToken.add(token);
+      log('Token added: $token');
     }
   }
 
   Future<void> sendNotification(String message) async {
+    log('sendNotification Start');
+    log('memberDevicesToken length: ${memberDevicesToken.length}');
+    if (memberDevicesToken.isEmpty) return;
+
     final serviceAccountPath = 'service-account.json';
     final projectId = 'uni-chat-69d59';
     final sender = FcmSender(serviceAccountPath, projectId);
     await sender.init();
 
-    for (var memberToken in memberDevicesToken) {
-      if (memberDevicesToken.contains('') || memberToken == userToken) continue;
+    for (var token in memberDevicesToken) {
+      log('Sending to token: $token');
       await sender.sendNotification(
-        deviceToken: memberToken,
+        deviceToken: token,
         title: widget.group.name,
         body: message,
         data: {'click_action': 'FLUTTER_NOTIFICATION_CLICK'},
       );
+      log('Notification sent to $token');
     }
   }
 

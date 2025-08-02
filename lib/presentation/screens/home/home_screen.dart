@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:UniChat/presentation/widgets/home/doctor_create_group_button.dart';
+import 'package:UniChat/presentation/widgets/settings/firebase_api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +25,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     loadUseruserRole();
+    
   }
+
+
 
   Future<void> loadUseruserRole() async {
     final doc = await FirebaseFirestore.instance
