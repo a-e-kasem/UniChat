@@ -74,6 +74,7 @@ class GroupDetailsCubit extends Cubit<GroupDetailsState> {
             name: m.name,
             role: 'student',
             token: m.token,
+     
           );
         }
         return m;

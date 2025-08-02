@@ -16,3 +16,4 @@ class HomeGroupsError extends HomeState {
   final String message;
   HomeGroupsError(this.message);
 }
+

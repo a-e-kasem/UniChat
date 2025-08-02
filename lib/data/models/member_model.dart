@@ -6,11 +6,13 @@ class MemberModel {
   final String role;
   final String token;
 
+
   MemberModel({
     required this.id,
     required this.name,
     required this.role,
     required this.token,
+
   });
 
   factory MemberModel.fromDoc(DocumentSnapshot doc) {
@@ -19,6 +21,7 @@ class MemberModel {
       name: doc['name'],
       role: doc['role'],
       token: doc['token'],
+   
     );
   }
 }

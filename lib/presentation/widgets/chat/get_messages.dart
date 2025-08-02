@@ -13,12 +13,14 @@ class GetMessages extends StatelessWidget {
   final String chatId;
   final String currentUserId;
   final bool showNameOfSenderOrNot;
+  final Map<String, String> userImages;
 
   const GetMessages({
     super.key,
     required this.chatId,
     required this.currentUserId,
     required this.showNameOfSenderOrNot,
+    required this.userImages,
   });
 
   @override
@@ -63,7 +65,6 @@ class GetMessages extends StatelessWidget {
               final timestamp = data['time'] as Timestamp;
               time = DateFormat('HH:mm').format(timestamp.toDate());
             }
-
             return Align(
               alignment: isMe ? Alignment.centerLeft : Alignment.centerRight,
               child: Padding(
@@ -71,211 +72,244 @@ class GetMessages extends StatelessWidget {
                   horizontal: 10,
                   vertical: 5,
                 ),
-                child: Column(
-                  crossAxisAlignment: isMe
-                      ? CrossAxisAlignment.start
-                      : CrossAxisAlignment.end,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: isMe
+                      ? MainAxisAlignment.start
+                      : MainAxisAlignment.end,
                   children: [
-                    if (!isMe &&
-                        showNameOfSenderOrNot &&
-                        data['senderName'] != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Text(
-                          data['senderName'],
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
-                            color: isDark ? Colors.white70 : Colors.black87,
-                          ),
-                        ),
-                      ),
-
-                    GestureDetector(
-                      onLongPress: () {
-                        showDialog(
-                          context: context,
-                          builder: (ctx) => Dialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            backgroundColor: Theme.of(context).cardColor,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 16,
-                                horizontal: 16,
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: isMe
+                            ? CrossAxisAlignment.start
+                            : CrossAxisAlignment.end,
+                        children: [
+                          if (!isMe &&
+                              showNameOfSenderOrNot &&
+                              data['senderName'] != null)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Text(
+                                data['senderName'],
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  color: isDark
+                                      ? Colors.white70
+                                      : Colors.black87,
+                                ),
                               ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // Emoji reaction row
-                                  Wrap(
-                                    alignment: WrapAlignment.center,
-                                    spacing: 12,
-                                    children: ['❤️', '😂', '👍', '😢', '🔥']
-                                        .map((emoji) {
-                                          return GestureDetector(
-                                            onTap: () async {
-                                              final userId = FirebaseAuth
-                                                  .instance
-                                                  .currentUser!
-                                                  .uid;
-                                              await FirebaseFirestore.instance
-                                                  .collection('groups')
-                                                  .doc(chatId)
-                                                  .collection('messages')
-                                                  .doc(messages[index].id)
-                                                  .update({
-                                                    'reactions.$userId': emoji,
-                                                  });
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text(
-                                              emoji,
-                                              style: const TextStyle(
-                                                fontSize: 30,
-                                              ),
-                                            ),
-                                          );
-                                        })
-                                        .toList(),
+                            ),
+                          GestureDetector(
+                            onLongPress: () {
+                              showDialog(
+                                context: context,
+                                builder: (ctx) => Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
                                   ),
-
-                                  const Divider(height: 30),
-
-                                  // Action list
-                                  ListTile(
-                                    leading: const Icon(
-                                      FontAwesomeIcons.reply,
-                                      size: 20,
+                                  backgroundColor: Theme.of(context).cardColor,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Wrap(
+                                          alignment: WrapAlignment.center,
+                                          spacing: 12,
+                                          children:
+                                              [
+                                                '❤️',
+                                                '😂',
+                                                '👍',
+                                                '😢',
+                                                '🔥',
+                                              ].map((emoji) {
+                                                return GestureDetector(
+                                                  onTap: () async {
+                                                    final userId = FirebaseAuth
+                                                        .instance
+                                                        .currentUser!
+                                                        .uid;
+                                                    await FirebaseFirestore
+                                                        .instance
+                                                        .collection('groups')
+                                                        .doc(chatId)
+                                                        .collection('messages')
+                                                        .doc(messages[index].id)
+                                                        .update({
+                                                          'reactions.$userId':
+                                                              emoji,
+                                                        });
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text(
+                                                    emoji,
+                                                    style: const TextStyle(
+                                                      fontSize: 30,
+                                                    ),
+                                                  ),
+                                                );
+                                              }).toList(),
+                                        ),
+                                        const Divider(height: 30),
+                                        ListTile(
+                                          leading: const Icon(
+                                            FontAwesomeIcons.reply,
+                                            size: 20,
+                                          ),
+                                          title: const Text('Reply'),
+                                          onTap: () {
+                                            context
+                                                .read<ReplayMessageCubit>()
+                                                .setReply(messages[index].id);
+                                            Navigator.pop(ctx);
+                                          },
+                                        ),
+                                        ListTile(
+                                          leading: const Icon(
+                                            Icons.copy,
+                                            size: 20,
+                                          ),
+                                          title: const Text('Copy'),
+                                          onTap: () {
+                                            Clipboard.setData(
+                                              ClipboardData(text: message),
+                                            );
+                                            Navigator.pop(ctx);
+                                          },
+                                        ),
+                                        ListTile(
+                                          leading: const Icon(
+                                            Icons.delete,
+                                            size: 20,
+                                          ),
+                                          title: const Text('Delete'),
+                                          onTap: () {
+                                            FirebaseFirestore.instance
+                                                .collection('groups')
+                                                .doc(chatId)
+                                                .collection('messages')
+                                                .doc(messages[index].id)
+                                                .delete();
+                                            Navigator.pop(ctx);
+                                          },
+                                        ),
+                                      ],
                                     ),
-                                    title: const Text('Reply'),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Row(
+                              mainAxisAlignment: isMe
+                                  ? MainAxisAlignment.start
+                                  : MainAxisAlignment.end,
+                              children: [
+                                if (!isMe)
+                                  GestureDetector(
                                     onTap: () {
                                       context
                                           .read<ReplayMessageCubit>()
                                           .setReply(messages[index].id);
-                                      Navigator.pop(ctx);
                                     },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(7),
+                                      margin: const EdgeInsets.only(right: 8),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(
+                                          999,
+                                        ),
+                                        color: isDark
+                                            ? Colors.grey[700]
+                                            : Colors.grey[300],
+                                      ),
+                                      child: Icon(
+                                        FontAwesomeIcons.reply,
+                                        size: 16,
+                                        color: isDark
+                                            ? Colors.grey[300]
+                                            : Colors.grey[700],
+                                      ),
+                                    ),
                                   ),
-                                  ListTile(
-                                    leading: const Icon(Icons.copy, size: 20),
-                                    title: const Text('Copy'),
-                                    onTap: () {
-                                      Clipboard.setData(
-                                        ClipboardData(text: message),
-                                      );
-                                      Navigator.pop(ctx);
-                                    },
+                                Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    color: isMe
+                                        ? (isDark
+                                              ? Colors.blueAccent[700]
+                                              : Colors.lightBlue[400])
+                                        : (isDark
+                                              ? Colors.grey[700]
+                                              : Colors.grey[400]),
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: const Radius.circular(16),
+                                      topRight: const Radius.circular(16),
+                                      bottomRight: isMe
+                                          ? const Radius.circular(16)
+                                          : Radius.zero,
+                                      bottomLeft: isMe
+                                          ? Radius.zero
+                                          : const Radius.circular(16),
+                                    ),
                                   ),
-                                  ListTile(
-                                    leading: const Icon(Icons.delete, size: 20),
-                                    title: const Text('Delete'),
-                                    onTap: () {
-                                      FirebaseFirestore.instance
-                                          .collection('groups')
-                                          .doc(chatId)
-                                          .collection('messages')
-                                          .doc(messages[index].id)
-                                          .delete();
-                                      Navigator.pop(ctx);
-                                    },
+                                  child: Column(
+                                    children: [
+                                      if (messageReply != '')
+                                        ReplyMessage(
+                                          messageReply: messageReply,
+                                          chatId: chatId,
+                                          isMe: isMe,
+                                          isDark: isDark,
+                                          typeMessage: typeMessage,
+                                          imageUrl: imageUrl,
+                                        ),
+                                      MessageBubble(
+                                        isMe: isMe,
+                                        isDark: isDark,
+                                        typeMessage: typeMessage,
+                                        imageUrl: imageUrl,
+                                        message: message,
+                                        reactions:
+                                            data['reactions']
+                                                as Map<String, dynamic>?,
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-
-                      child: Row(
-                        mainAxisAlignment: isMe
-                            ? MainAxisAlignment.start
-                            : MainAxisAlignment.end,
-                        children: [
-                          if (!isMe)
-                            GestureDetector(
-                              onTap: () {
-                                context.read<ReplayMessageCubit>().setReply(
-                                  messages[index].id,
-                                );
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(7),
-                                margin: const EdgeInsets.only(right: 8),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(999),
-                                  color: isDark
-                                      ? Colors.grey[700]
-                                      : Colors.grey[300],
-                                ),
-                                child: Icon(
-                                  FontAwesomeIcons.reply,
-                                  size: 16,
-                                  color: isDark
-                                      ? Colors.grey[300]
-                                      : Colors.grey[700],
-                                ),
-                              ),
-                            ),
-
-                          Container(
-                            padding: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              color: isMe
-                                  ? (isDark
-                                        ? Colors.blueAccent[700]
-                                        : Colors.lightBlue[400])
-                                  : (isDark
-                                        ? Colors.grey[700]
-                                        : Colors.grey[400]),
-                              borderRadius: BorderRadius.only(
-                                topLeft: const Radius.circular(16),
-                                topRight: const Radius.circular(16),
-                                bottomRight: isMe
-                                    ? const Radius.circular(16)
-                                    : Radius.zero,
-                                bottomLeft: isMe
-                                    ? Radius.zero
-                                    : const Radius.circular(16),
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                if (messageReply != '')
-                                  ReplyMessage(
-                                    messageReply: messageReply,
-                                    chatId: chatId,
-                                    isMe: isMe,
-                                    isDark: isDark,
-                                    typeMessage: typeMessage,
-                                    imageUrl: imageUrl,
-                                  ),
-                                MessageBubble(
-                                  isMe: isMe,
-                                  isDark: isDark,
-                                  typeMessage: typeMessage,
-                                  imageUrl: imageUrl,
-                                  message: message,
-                                  reactions:
-                                      data['reactions']
-                                          as Map<String, dynamic>?,
                                 ),
                               ],
                             ),
                           ),
+                          if (time.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                              ),
+                              child: Text(
+                                time,
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ),
                         ],
                       ),
                     ),
-
-                    if (time.isNotEmpty)
+                    if (!isMe && showNameOfSenderOrNot)
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Text(time, style: const TextStyle(fontSize: 12)),
+                        padding: const EdgeInsets.only(left: 8, bottom: 16),
+                        child: CircleAvatar(
+                          radius: 18,
+                          backgroundImage: NetworkImage(
+                            userImages[senderId] ??
+                                'https://i.pinimg.com/736x/0f/68/94/0f6894e539589a50809e45833c8bb6c4.jpg',
+                          ),
+                        ),
                       ),
                   ],
                 ),
               ),
             );
+
           },
         );
       },

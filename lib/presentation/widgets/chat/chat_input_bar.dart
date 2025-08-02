@@ -28,6 +28,9 @@ class _ChatInputBarState extends State<ChatInputBar> {
           });
         }
       },
+      keyboardType: TextInputType.multiline,
+      maxLines: null,
+      textCapitalization: TextCapitalization.none,
       textDirection: isArabicInput ? TextDirection.rtl : TextDirection.ltr,
       textAlign: isArabicInput ? TextAlign.right : TextAlign.left,
       decoration: InputDecoration(

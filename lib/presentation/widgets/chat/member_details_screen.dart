@@ -17,7 +17,8 @@ class MemberDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDoctor = currentUserRole == 'doctor';
+    final isDoctor =
+        currentUserRole == 'doctor' || currentUserRole == 'creater';
 
     return BlocProvider(
       create: (_) => GroupDetailsCubit(group)..loadMembers(),

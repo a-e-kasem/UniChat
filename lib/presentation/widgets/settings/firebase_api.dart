@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -10,6 +11,7 @@ class FirebaseApi {
   final _firebaseMessage = FirebaseMessaging.instance;
   final _messageStream = FirebaseMessaging.onMessage;
   static String? userToken;
+  static String? adminToken;
 
   Stream<RemoteMessage> get messageStream => _messageStream;
 
@@ -17,12 +19,19 @@ class FirebaseApi {
       FlutterLocalNotificationsPlugin();
 
   Future<void> initNotification() async {
-    await _firebaseMessage.requestPermission();
+    final adminDoc = await FirebaseFirestore.instance
+        .collection('admins')
+        .doc('a.ali2672@su.edu.eg')
+        .get();
 
+    adminToken = adminDoc.data()?['fcmToken'];
+
+    await _firebaseMessage.requestPermission();
     await _initLocalNotification();
-     
+
     userToken = await _firebaseMessage.getToken();
     log('FCM Token: $userToken');
+    log('Admin Token: $adminToken');
 
     iniPushNotification();
 

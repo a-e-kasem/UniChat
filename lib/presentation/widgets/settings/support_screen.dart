@@ -1,21 +1,33 @@
 import 'package:UniChat/data/core/consts/consts.dart';
 import 'package:UniChat/logic/cubits/notification_cubit/notification_cubit.dart';
 import 'package:UniChat/presentation/widgets/settings/firebase_api.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SupportScreen extends StatelessWidget {
   SupportScreen({super.key});
   final TextEditingController messageController = TextEditingController();
-  Future<void> sendNotification(String message) async {
+
+  Future<void> sendNotificationToAdmin(String message) async {
+    if (FirebaseApi.adminToken == null) {
+      final adminDoc = await FirebaseFirestore.instance
+          .collection('admin')
+          .doc('a.ali2672@su.edu.eg')
+          .get();
+
+      FirebaseApi.adminToken = adminDoc.data()?['fcmToken'];
+    }
+
+    if (FirebaseApi.adminToken == null) return;
+
     final serviceAccountPath = 'service-account.json';
     final projectId = 'uni-chat-69d59';
     final sender = FcmSender(serviceAccountPath, projectId);
     await sender.init();
 
     await sender.sendNotification(
-      deviceToken:
-          'eam62CACQye8qGIvJ0jvNT:APA91bGblGoADPcvKLC-5xUCNBkPX7M3eeS6taPQAVpNhZTtsLE4jWPnlVtr0dC_oWjgc84pG0nz__Y4rob6R_tAlIjIQRzD5y6M_rtzt3S4hu_tP3F5jfE',
+      deviceToken: FirebaseApi.adminToken!,
       title: 'New Support Message',
       body: message,
       data: {'click_action': 'FLUTTER_NOTIFICATION_CLICK'},
@@ -34,7 +46,7 @@ class SupportScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+               
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.grey),
                 ),
@@ -61,11 +73,12 @@ class SupportScreen extends StatelessWidget {
               }
 
               try {
+                messageController.clear();
+                await sendNotificationToAdmin(message);
                 await BlocProvider.of<NotificationCubit>(
                   context,
                 ).sendSupportMessage(message);
 
-                messageController.clear();
                 showSnackBarSuccess(context, 'Message sent successfully');
               } catch (e) {
                 showSnackBarError(context, 'Error sending message');

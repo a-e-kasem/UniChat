@@ -24,13 +24,13 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-
   List<String> memberDevicesToken = [];
   String userToken = '';
   late TextEditingController _controller;
   late CollectionReference messages;
   final User? user = FirebaseAuth.instance.currentUser;
   String? role;
+  final Map<String, String> userImages = {};
 
   @override
   void initState() {
@@ -40,9 +40,10 @@ class _ChatScreenState extends State<ChatScreen> {
         .collection('groups')
         .doc(widget.group.id)
         .collection('messages');
-   
+
     loadUserRole();
     prepareMemberTokens();
+    getAllMemberImages();
     log('memberDevicesToken length: ${memberDevicesToken.length}');
   }
 
@@ -52,6 +53,29 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
+  Future<void> getAllMemberImages() async {
+    try {
+      for (var member in widget.group.members) {
+        if (!userImages.containsKey(member.id)) {
+          final doc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(member.id)
+              .get();
+
+          final photoUrl = doc.data()?['photoUrl'];
+          userImages[member.id] =
+              photoUrl ??
+              'https://i.pinimg.com/736x/0f/68/94/0f6894e539589a50809e45833c8bb6c4.jpg';
+        }
+      }
+
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      log('Error loading member images: $e');
+    }
+  }
 
   Future<void> prepareMemberTokens() async {
     log('Start prepareMemberTokens');
@@ -96,12 +120,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> sendMessage() async {
     final text = _controller.text.trim();
+    _controller.clear();
     if (text.isEmpty) return;
 
     final replyProvider = context.read<ReplayMessageCubit>();
     final replyMessageID = replyProvider.getMessageID;
-
-    await sendNotification(text);
+    replyProvider.clearReply();
 
     context.read<ChatCubit>().sendMessage(
       groupId: widget.group.id,
@@ -109,6 +133,7 @@ class _ChatScreenState extends State<ChatScreen> {
       replyMessageID: replyMessageID,
     );
 
+    await sendNotification(text);
     replyProvider.clearReply();
     _controller.clear();
   }
@@ -297,6 +322,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 chatId: widget.group.id,
                 currentUserId: user?.uid ?? '',
                 showNameOfSenderOrNot: isAdminOrDoctor,
+                userImages: userImages,
               ),
             ),
             BlocBuilder<ReplayMessageCubit, ReplayMessageState>(

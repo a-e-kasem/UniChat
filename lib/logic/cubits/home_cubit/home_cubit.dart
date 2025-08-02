@@ -64,7 +64,6 @@ Future<void> getUserGroups() async {
           final groupData = groupDoc.data();
           if (groupData == null) return;
 
-          // جلب الأعضاء من مجموعة members داخل الجروب
           final membersSnapshot = await firestore
               .collection('groups')
               .doc(groupId)
@@ -84,7 +83,6 @@ Future<void> getUserGroups() async {
 
           groups.add(group);
 
-          // الاستماع لتحديث الرسائل في الجروب
           final sub = firestore
               .collection('groups')
               .doc(groupId)
