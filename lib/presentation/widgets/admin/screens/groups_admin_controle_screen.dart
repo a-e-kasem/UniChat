@@ -1,3 +1,4 @@
+
 import 'package:UniChat/data/core/consts/consts.dart';
 import 'package:UniChat/data/models/group_model.dart';
 import 'package:UniChat/presentation/widgets/admin/components/create_group_screen.dart';
@@ -67,7 +68,12 @@ class _GroupsAdminControleScreenState extends State<GroupsAdminControleScreen> {
               IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () async {
-                  await Navigator.pushNamed(context, CreateGroupScreen.id);
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CreateGroupScreen(roleCall: 'admin'),
+                    ),
+                  );
                   _adminCubit.getUserGroups();
                 },
               ),
@@ -100,7 +106,7 @@ class _GroupsAdminControleScreenState extends State<GroupsAdminControleScreen> {
                           vertical: 6,
                         ),
                         child: ListTile(
-                          leading: const Icon(Icons.group, size: 40,),
+                          leading: const Icon(Icons.group, size: 40),
                           title: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

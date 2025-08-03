@@ -1,6 +1,9 @@
+
 import 'package:UniChat/data/core/consts/consts.dart';
+import 'package:UniChat/presentation/widgets/admin/components/show_users_from_university_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class UniversityAdminControleScreen extends StatefulWidget {
   const UniversityAdminControleScreen({super.key});
@@ -34,9 +37,9 @@ class _UniversityAdminControleScreenState
           .doc(groupId)
           .set({
             'name': universityName,
-        'adminEmail': adminEmail,
-        'createdAt': Timestamp.now(),
-      });
+            'adminEmail': adminEmail,
+            'createdAt': Timestamp.now(),
+          });
 
       showSnackBarSuccess(context, 'University added successfully');
       _controllerName.clear();
@@ -58,7 +61,7 @@ class _UniversityAdminControleScreenState
       final data = doc.data();
       return {
         'name': data['name']?.toString() ?? '',
-        'emailDomain': data['emailDomain']?.toString() ?? '',
+        'emailDomain': doc.id.toString(),
         'adminEmail': data['adminEmail']?.toString() ?? '',
       };
     }).toList();
@@ -161,6 +164,16 @@ class _UniversityAdminControleScreenState
                     subtitle: Text(
                       '${uni['emailDomain']} | Admin: ${uni['adminEmail']}',
                     ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ShowUsersFromUniversityScreen(
+                            emailDomain: uni['emailDomain']!,
+                          ),
+                        ),
+                      );
+                    },
                   );
                 }).toList(),
               );

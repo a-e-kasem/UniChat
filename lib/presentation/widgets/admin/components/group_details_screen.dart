@@ -1,6 +1,7 @@
 import 'package:UniChat/data/core/consts/consts.dart';
 import 'package:UniChat/data/models/group_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:UniChat/logic/cubits/group_details_cubit/group_details_cubit.dart';
 
@@ -13,7 +14,45 @@ class GroupDetailsScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => GroupDetailsCubit(group)..loadMembers(),
       child: Scaffold(
-        appBar: AppBar(title: Text(group.name)),
+        appBar: AppBar(
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                group.name,
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 5),
+              Row(
+                children: [
+                  Text(
+                    'ID: ${group.id}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.grey,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                  const SizedBox(width: 5),
+                  GestureDetector(
+                    onTap: () {
+                      Clipboard.setData(ClipboardData(text: group.id));
+                      showSnackBarSuccess(
+                        context,
+                        'Group ID copied to clipboard',
+                      );
+                    },
+                    child: Icon(Icons.copy, size: 20),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          toolbarHeight: 90,
+        ),
         body: BlocBuilder<GroupDetailsCubit, GroupDetailsState>(
           builder: (context, state) {
             if (state is GroupDetailsError) {
@@ -42,11 +81,13 @@ class GroupDetailsScreen extends StatelessWidget {
                         IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () {
-                            context
-                                .read<GroupDetailsCubit>()
-                                .removeMember(member.id);
+                            context.read<GroupDetailsCubit>().removeMember(
+                              member.id,
+                            );
                             showSnackBarSuccess(
-                                context, 'User removed from group');
+                              context,
+                              'User removed from group',
+                            );
                           },
                         ),
                         if (member.role != 'admin')
@@ -56,11 +97,13 @@ class GroupDetailsScreen extends StatelessWidget {
                               color: Colors.green,
                             ),
                             onPressed: () {
-                              context
-                                  .read<GroupDetailsCubit>()
-                                  .promoteToAdmin(member.id);
+                              context.read<GroupDetailsCubit>().promoteToAdmin(
+                                member.id,
+                              );
                               showSnackBarSuccess(
-                                  context, 'User promoted to admin');
+                                context,
+                                'User promoted to admin',
+                              );
                             },
                           ),
                         if (member.role == 'admin')
@@ -70,11 +113,13 @@ class GroupDetailsScreen extends StatelessWidget {
                               color: Colors.blue,
                             ),
                             onPressed: () {
-                              context
-                                  .read<GroupDetailsCubit>()
-                                  .demoteToMember(member.id);
+                              context.read<GroupDetailsCubit>().demoteToMember(
+                                member.id,
+                              );
                               showSnackBarSuccess(
-                                  context, 'User demoted from admin');
+                                context,
+                                'User demoted from admin',
+                              );
                             },
                           ),
                       ],

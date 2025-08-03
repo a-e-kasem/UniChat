@@ -1,10 +1,15 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:UniChat/data/models/group_model.dart';
 import 'package:UniChat/data/models/member_model.dart';
+import 'package:UniChat/logic/cubits/home_cubit/home_cubit.dart';
+import 'package:UniChat/presentation/widgets/settings/firebase_api.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
 part 'admin_groups_state.dart';
@@ -94,30 +99,39 @@ class AdminGroupsCubit extends Cubit<AdminGroupsState> {
     }
   }
 
-  Future<void> createGroup(String groupName, String roleCreator) async {
+  Future<void> createGroup(
+    String groupName,
+    String roleCreator, {
+    BuildContext? context,
+  }) async {
+    log('roleCreator: $roleCreator');
     if (groupName.trim().isEmpty || user == null) {
       emit(AdminGroupsError('Group name is required.'));
       return;
     }
 
     try {
+      final addCourse = roleCreator == 'doctor';
       final groupId =
-          '${groupName.trim()}_${DateTime.now().millisecondsSinceEpoch}';
+          '${addCourse ? 'courses_' : ''}${groupName.trim()}_${DateTime.now().millisecondsSinceEpoch}';
       final groupRef = firestore.collection('groups').doc(groupId);
 
-    
       await groupRef.set({
         'name': groupName,
         'createdBy': user!.uid,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
+      if (roleCreator == 'admin') {
+        emit(AdminGroupsSuccess('Group "$groupName" created successfully.'));
+        return;
+      }
       await groupRef.collection('members').doc(user!.uid).set({
         'name': user!.displayName ?? 'Anonymous',
         'role': roleCreator,
+        'token': FirebaseApi.userToken,
         'joinedAt': Timestamp.now(),
       });
-
 
       await firestore
           .collection('users')
@@ -125,7 +139,7 @@ class AdminGroupsCubit extends Cubit<AdminGroupsState> {
           .collection('groups')
           .doc(groupId)
           .set({'name': groupName, 'joinedAt': Timestamp.now()});
-
+      BlocProvider.of<HomeCubit>(context!).getUserGroups();
       emit(AdminGroupsSuccess('Group "$groupName" created successfully.'));
       await getUserGroups();
     } catch (e) {

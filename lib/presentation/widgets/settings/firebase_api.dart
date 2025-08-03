@@ -72,8 +72,8 @@ class FirebaseApi {
   Future<void> showNotification(RemoteMessage message) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-          'your_channel_id', // معرف القناة
-          'your_channel_name', // اسم القناة
+          'your_channel_id', //
+          'your_channel_name', // 
           channelDescription: 'your_channel_description',
           importance: Importance.max,
           priority: Priority.high,
@@ -153,4 +153,5 @@ class FcmSender {
     final jsonStr = await rootBundle.loadString('assets/service-account.json');
     return jsonDecode(jsonStr);
   }
+
 }

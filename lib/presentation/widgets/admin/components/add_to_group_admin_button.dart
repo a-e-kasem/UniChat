@@ -5,8 +5,14 @@ import 'package:UniChat/data/core/consts/consts.dart';
 class AddToGroupAdminButton extends StatefulWidget {
   final String userId;
   final String userName;
+  final String userToken;
 
-  const AddToGroupAdminButton({super.key, required this.userId, required this.userName});
+  const AddToGroupAdminButton({
+    super.key,
+    required this.userId,
+    required this.userName,
+    required this.userToken,
+  });
 
   @override
   State<AddToGroupAdminButton> createState() => _AddToGroupAdminButtonState();
@@ -78,6 +84,7 @@ class _AddToGroupAdminButtonState extends State<AddToGroupAdminButton> {
                         .set({
                           'joinedAt': Timestamp.now(),
                           'name': widget.userName,
+                          'token': widget.userToken,
                           'role': 'student',
                         });
 

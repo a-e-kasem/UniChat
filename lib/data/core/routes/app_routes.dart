@@ -39,7 +39,7 @@ class AppRoutes {
     admin: (_) => AdminScreen(),
     usersAdminControl: (_) => UsersAdminControlScreen(),
     groupsAdminControle: (_) => GroupsAdminControleScreen(),
-    createGroup: (_) => CreateGroupScreen(),
+    createGroup: (_) => CreateGroupScreen(roleCall: 'admin'),
     universityAdminControl: (_) => UniversityAdminControleScreen(),
  
   };
