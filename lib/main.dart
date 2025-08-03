@@ -5,7 +5,6 @@ import 'package:UniChat/logic/cubits/chat_cubit/chat_cubit.dart';
 import 'package:UniChat/logic/cubits/home_cubit/home_cubit.dart';
 import 'package:UniChat/logic/cubits/notification_cubit/notification_cubit.dart';
 import 'package:UniChat/presentation/widgets/settings/firebase_api.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

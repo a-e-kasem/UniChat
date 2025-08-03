@@ -32,12 +32,22 @@ class RegisterButtonBox extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         if (formKey.currentState!.validate()) {
-          if (!email.text.trim().endsWith(
-            '.edu.eg',
-          )) {
+          // if (!email.text.trim().endsWith(
+          //   '.edu.eg',
+          // )) {
+          //   showSnackBarError(
+          //     context,
+          //     'Email must end with .edu.eg Domain',
+          //   );
+          //   return;
+          // }
+
+          // for test=================================<<
+          if (!email.text.trim().endsWith('.edu.eg') &&
+              !email.text.trim().endsWith('@gmail.com')) {
             showSnackBarError(
               context,
-              'Email must end with .edu.eg Domain',
+              'Email must be a Google email or your University email',
             );
             return;
           }

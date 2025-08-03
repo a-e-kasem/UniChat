@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (mounted) {
       setState(() {
-        userRole = doc.data()?['userRole'];
+        userRole = doc.data()?['role'];
       });
     }
   }
@@ -64,7 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
         toolbarHeight: 80,
         actions: [
           userRole == 'doctor'
-              ? DoctorCreateGroupButton()
+              ? DoctorCreateGroupButton(
+                  userId: user.uid,
+                  userName: user.displayName!,
+                )
               : JoinToGroupButton(userId: user.uid, userName: user.displayName),
           const SizedBox(width: 5),
         ],

@@ -85,7 +85,7 @@ class _ChatScreenState extends State<ChatScreen> {
       return;
     }
     memberDevicesToken.clear();
-    log('Start Loop');
+    log('Start Loop - ChatScreen');
     for (var member in widget.group.members) {
       log('member.id: ${member.id}');
       final token = member.token;
@@ -281,7 +281,10 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  bool get isAdminOrDoctor => role == 'admin' || role == 'doctor';
+  bool get showImageNameOfSenderOrNotAndShowGroupMember =>
+      role == 'admin' ||
+      role == 'doctor' ||
+      !widget.group.id.contains('courses');
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -296,7 +299,7 @@ class _ChatScreenState extends State<ChatScreen> {
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           actions: [
-            isAdminOrDoctor
+            showImageNameOfSenderOrNotAndShowGroupMember
                 ? IconButton(
                     icon: const Icon(Icons.group),
                     onPressed: () {
@@ -321,7 +324,8 @@ class _ChatScreenState extends State<ChatScreen> {
               child: GetMessages(
                 chatId: widget.group.id,
                 currentUserId: user?.uid ?? '',
-                showNameOfSenderOrNot: isAdminOrDoctor,
+                showImageNameOfSenderOrNot:
+                    showImageNameOfSenderOrNotAndShowGroupMember,
                 userImages: userImages,
               ),
             ),

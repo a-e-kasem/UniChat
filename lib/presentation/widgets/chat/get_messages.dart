@@ -12,20 +12,21 @@ import 'package:UniChat/presentation/widgets/chat/reply_message.dart';
 class GetMessages extends StatelessWidget {
   final String chatId;
   final String currentUserId;
-  final bool showNameOfSenderOrNot;
+  final bool showImageNameOfSenderOrNot;
   final Map<String, String> userImages;
 
   const GetMessages({
     super.key,
     required this.chatId,
     required this.currentUserId,
-    required this.showNameOfSenderOrNot,
+    required this.showImageNameOfSenderOrNot,
     required this.userImages,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final openAllAccess = showImageNameOfSenderOrNot;
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -85,7 +86,7 @@ class GetMessages extends StatelessWidget {
                             : CrossAxisAlignment.end,
                         children: [
                           if (!isMe &&
-                              showNameOfSenderOrNot &&
+                              openAllAccess &&
                               data['senderName'] != null)
                             Padding(
                               padding: const EdgeInsets.only(bottom: 4),
@@ -294,7 +295,7 @@ class GetMessages extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (!isMe && showNameOfSenderOrNot)
+                    if (!isMe && openAllAccess)
                       Padding(
                         padding: const EdgeInsets.only(left: 8, bottom: 16),
                         child: CircleAvatar(
@@ -309,7 +310,6 @@ class GetMessages extends StatelessWidget {
                 ),
               ),
             );
-
           },
         );
       },

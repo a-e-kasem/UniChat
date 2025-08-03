@@ -39,8 +39,8 @@ class NotificationCubit extends Cubit<NotificationState> {
     required String title,
     required String body,
   }) async {
-    const String serverKey = 'YOUR_FIREBASE_SERVER_KEY'; // 🔐 حط مفتاح السيرفر هنا
-    const String targetFCMToken = 'ADMIN_DEVICE_FCM_TOKEN'; // 🎯 توكن جهاز المشرف
+    const String serverKey = 'YOUR_FIREBASE_SERVER_KEY';
+    const String targetFCMToken = 'ADMIN_DEVICE_FCM_TOKEN'; 
 
     final url = Uri.parse('https://fcm.googleapis.com/fcm/send');
 

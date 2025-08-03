@@ -1,5 +1,7 @@
+import 'package:UniChat/data/core/consts/consts.dart';
 import 'package:UniChat/data/models/group_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:UniChat/logic/cubits/group_details_cubit/group_details_cubit.dart';
 
@@ -17,8 +19,11 @@ class MemberDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDoctor =
-        currentUserRole == 'doctor' || currentUserRole == 'creater';
+    final isDoctor = currentUserRole == 'doctor';
+    final isCreater = currentUserRole == 'creater';
+
+    final promotionAccess = isDoctor || isCreater;
+    
 
     return BlocProvider(
       create: (_) => GroupDetailsCubit(group)..loadMembers(),
@@ -35,7 +40,45 @@ class MemberDetailsScreen extends StatelessWidget {
           }
         },
         child: Scaffold(
-          appBar: AppBar(title: const Text('Group Members')),
+          appBar: AppBar(
+            title: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Group Member',
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Text(
+                      'ID: ${group.id}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.grey,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    const SizedBox(width: 5),
+                    GestureDetector(
+                      onTap: () {
+                        Clipboard.setData(ClipboardData(text: group.id));
+                        showSnackBarSuccess(
+                          context,
+                          'Group ID copied to clipboard',
+                        );
+                      },
+                      child: Icon(Icons.copy, size: 20),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            toolbarHeight: 90,
+          ),
           body: BlocBuilder<GroupDetailsCubit, GroupDetailsState>(
             builder: (context, state) {
               if (state is GroupDetailsLoading) {
@@ -56,7 +99,7 @@ class MemberDetailsScreen extends StatelessWidget {
                       leading: const Icon(Icons.person),
                       title: Text(member.name),
                       subtitle: Text('Role: ${member.role}'),
-                      trailing: isDoctor && member.id != currentUserId
+                      trailing: promotionAccess && member.id != currentUserId
                           ? Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [

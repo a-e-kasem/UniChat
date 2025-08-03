@@ -49,9 +49,14 @@ class _UsersAdminControlScreenState extends State<UsersAdminControlScreen> {
                   children: [
                     DeleteUserButton(userId: user['id']),
                     const SizedBox(width: 8),
-                    AddToGroupAdminButton(userId: user['id'], userName: user['name'] ?? 'Unknown User'),
+                    AddToGroupAdminButton(
+                      userToken: user['fcmToken'] ?? 'No token',
+                      userId: user['id'],
+                      userName: user['name'] ?? 'Unknown User',
+                    ),
                   ],
                 ),
+               
               );
             },
           );

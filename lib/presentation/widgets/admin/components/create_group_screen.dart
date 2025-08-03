@@ -1,17 +1,19 @@
+import 'dart:developer';
+
 import 'package:UniChat/data/core/consts/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:UniChat/logic/cubits/admin_groups_cubit/admin_groups_cubit.dart';
 
 class CreateGroupScreen extends StatelessWidget {
-  const CreateGroupScreen({super.key});
+  const CreateGroupScreen({super.key, required this.roleCall});
   static const String id = 'CreateGroupScreen';
-  static  String roleCall = 'admin';
-
+  final String roleCall;
+ 
   @override
   Widget build(BuildContext context) {
     final TextEditingController groupNameController = TextEditingController();
-
+    log('roleCall: $roleCall ===================');
     return Scaffold(
       appBar: AppBar(title: const Text('Create a Group'), centerTitle: true),
       body: BlocListener<AdminGroupsCubit, AdminGroupsState>(
@@ -46,7 +48,12 @@ class CreateGroupScreen extends StatelessWidget {
                           label: const Text('Create Group'),
                           onPressed: () {
                             final name = groupNameController.text.trim();
-                            context.read<AdminGroupsCubit>().createGroup(name, roleCall);
+                            log('roleCall: $roleCall');
+                            context.read<AdminGroupsCubit>().createGroup(
+                              name,
+                              roleCall,
+                              context: context,
+                            );
                           },
                         );
                 },
